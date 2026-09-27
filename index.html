@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pandeys Pet World BahiKhata</title>
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --danger: #ef4444;
+      --success: #10b981;
+      --border: #e5e7eb;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 75px; user-select: none; }
+    
+    /* Top App Bar */
+    .app-header {
+      background: var(--primary);
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .app-header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.3px; }
+    .sync-status { font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; }
+    .dot.synced { background: #34d399; }
+    .dot.offline { background: #f87171; }
+
+    /* Summary Bar */
+    .summary-card {
+      background: var(--card-bg);
+      margin: 12px 16px;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+    .summary-item h3 { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+    .summary-item p { font-size: 1.25rem; font-weight: 700; }
+    .text-danger { color: var(--danger); }
+    .text-success { color: var(--success); }
+
+    /* Search & Action Bar */
+    .search-bar { padding: 0 16px 8px; }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      outline: none;
+      font-size: 0.95rem;
+      background: white;
+    }
+
+    /* Customer List */
+    .customer-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+    .customer-card {
+      background: var(--card-bg);
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-left: 4px solid transparent;
+    }
+    .customer-card.vyavaharik { border-left-color: var(--success); }
+    .customer-card.defaulter { border-left-color: var(--danger); }
+    .cust-info h4 { font-size: 1rem; font-weight: 600; }
+    .cust-info p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .badge-vyavaharik { background: #d1fae5; color: #065f46; }
+    .badge-defaulter { background: #fee2e2; color: #991b1b; }
+    .cust-balance { text-align: right; }
+    .cust-balance span { font-size: 1.05rem; font-weight: 700; display: block; }
+    .cust-balance small { font-size: 0.7rem; color: var(--muted); }
+
+    /* FAB Buttons */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(5,150,105,0.4);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    /* Modal Sheet */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.25s ease-out;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-header h2 { font-size: 1.1rem; }
+    .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    /* Custom Calculator & Presets */
+    .calc-box {
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      margin-bottom: 12px;
+    }
+    .calc-screen {
+      width: 100%;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: right;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      background: white;
+    }
+    .preset-chips { display: flex; gap: 8px; margin-bottom: 8px; }
+    .preset-chip {
+      background: #e5e7eb;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .calc-pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .calc-btn {
+      padding: 10px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Checkbox & Buttons */
+    .checkbox-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 0.85rem; }
+    .btn-row { display: flex; gap: 10px; margin-top: 16px; }
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .btn-give { background: var(--danger); color: white; }
+    .btn-got { background: var(--success); color: white; }
+    .btn-primary { background: var(--primary); color: white; width: 100%; }
+
+    /* Detail View Ledger */
+    .tx-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .tx-item:last-child { border: none; }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div>
+      <h1>Pandeys Pet World</h1>
+      <div class="sync-status">
+        <span class="dot" id="syncDot"></span>
+        <span id="syncText">Init...</span>
+      </div>
+    </div>
+    <button onclick="openConfigModal()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">⚙️</button>
+  </header>
+
+  <!-- Summary Balance -->
+  <section class="summary-card">
+    <div class="summary-item">
+      <h3>Lena Hai (Udhar)</h3>
+      <p class="text-danger" id="totalDue">₹0</p>
+    </div>
+    <div class="summary-item">
+      <h3>Kul Jama</h3>
+      <p class="text-success" id="totalPaid">₹0</p>
+    </div>
+  </section>
+
+  <!-- Search Filter -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" class="search-input" placeholder="Customer ya mobile number khoje..." oninput="renderCustomerList()">
+  </div>
+
+  <!-- Customer Directory -->
+  <main class="customer-list" id="customerList"></main>
+
+  <!-- Add Customer FAB -->
+  <button class="fab" onclick="openAddCustomerModal()">+ Add Customer</button>
+
+  <!-- Add Customer Modal -->
+  <div class="modal" id="addCustomerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Naya Customer Jodein</h2>
+        <button class="close-btn" onclick="closeModal('addCustomerModal')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>Customer Naam *</label>
+        <input type="text" id="newCustName" class="form-control" placeholder="e.g. Ramesh Kumar">
+      </div>
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input type="tel" id="newCustPhone" class="form-control" placeholder="10-digit number">
+      </div>
+      <button class="btn btn-primary" onclick="saveNewCustomer()">Save Karein</button>
+    </div>
+  </div>
+
+  <!-- Customer Ledger Details Modal -->
+  <div class="modal" id="ledgerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h2 id="ledgerCustName">Customer</h2>
+          <p id="ledgerCustPhone" style="font-size:0.8rem; color:var(--muted);"></p>
+        </div>
+        <button class="close-btn" onclick="closeModal('ledgerModal')">&times;</button>
+      </div>
+
+      <div style="background:#f9fafb; padding:12px; border-radius:8px; margin-bottom:12px; text-align:center;">
+        <span style="font-size:0.8rem; color:var(--muted);">Total Bakaya (Net Balance):</span>
+        <h3 id="ledgerNetBalance" style="font-size:1.4rem;">₹0</h3>
+        <span id="ledgerBehaviorBadge" class="badge"></span>
+      </div>
+
+      <div style="max-height:180px; overflow-y:auto; margin-bottom:12px;" id="ledgerTxList"></div>
+
+      <!-- Built-in Calculator -->
+      <div class="calc-box">
+        <input type="text" id="calcScreen" class="calc-screen" value="0" readonly>
+        <div class="preset-chips">
+          <button class="preset-chip" onclick="applyPreset(-5)">-5% Disc</button>
+          <button class="preset-chip" onclick="applyPreset(8)">+8% Tax</button>
+          <button class="preset-chip" onclick="applyPreset(-10)">-10% Disc</button>
+        </div>
+        <div class="calc-pad">
+          <button class="calc-btn" onclick="calcPress('7')">7</button>
+          <button class="calc-btn" onclick="calcPress('8')">8</button>
+          <button class="calc-btn" onclick="calcPress('9')">9</button>
+          <button class="calc-btn" onclick="calcPress('/')">÷</button>
+          <button class="calc-btn" onclick="calcPress('4')">4</button>
+          <button class="calc-btn" onclick="calcPress('5')">5</button>
+          <button class="calc-btn" onclick="calcPress('6')">6</button>
+          <button class="calc-btn" onclick="calcPress('*')">×</button>
+          <button class="calc-btn" onclick="calcPress('1')">1</button>
+          <button class="calc-btn" onclick="calcPress('2')">2</button>
+          <button class="calc-btn" onclick="calcPress('3')">3</button>
+          <button class="calc-btn" onclick="calcPress('-')">-</button>
+          <button class="calc-btn" onclick="calcClear()">C</button>
+          <button class="calc-btn" onclick="calcPress('0')">0</button>
+          <button class="calc-btn" onclick="calcEval()">=</button>
+          <button class="calc-btn" onclick="calcPress('+')">+</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tarikh (Date)</label>
+        <input type="date" id="txDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Item / Note</label>
+        <input type="text" id="txNote" class="form-control" placeholder="e.g. Pedigree 3kg + Belt">
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="sendMsgToggle" onchange="toggleMsgPreference(this.checked)">
+        <label for="sendMsgToggle">WhatsApp / SMS Vivran Bhejein</label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-give" onclick="recordTransaction('GIVEN')">Udhar Diya (Debit)</button>
+        <button class="btn btn-got" onclick="recordTransaction('GOT')">Prapt Hua (Credit)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings / Security Sync Modal -->
+  <div class="modal" id="configModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Sync & Security Settings</h2>
+        <button class="close-btn" onclick="closeModal('configModal')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>GitHub Personal Access Token (PAT) *</label>
+        <input type="password" id="cfgToken" class="form-control" placeholder="ghp_xxxxxxxxxxxx">
+      </div>
+      <div class="form-group">
+        <label>GitHub Username *</label>
+        <input type="text" id="cfgUsername" class="form-control" placeholder="e.g. user-name">
+      </div>
+      <div class="form-group">
+        <label>Repository Name *</label>
+        <input type="text" id="cfgRepo" class="form-control" placeholder="e.g. petworld-bahikhata">
+      </div>
+      <div class="form-group">
+        <label>Master Passphrase (AES-256 GCM) *</label>
+        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Military-grade key">
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">Save & Sync Database</button>
+    </div>
+  </div>
+
+  <script>
+    // App State
+    let appData = { customers: [], lastUpdated: 0 };
+    let currentCustomerId = null;
+    let syncSha = null;
+    let isSyncing = false;
+
+    const DB_FILE = "bahikhata_data.enc";
+
+    // Initialize Default State
+    window.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('txDate').valueAsDate = new Date();
+      
+      // Load cached message toggle preference
+      const savedToggle = localStorage.getItem('pw_bahikhata_msgtoggle');
+      if (savedToggle !== null) {
+        document.getElementById('sendMsgToggle').checked = (savedToggle === 'true');
+      }
+
+      loadLocalData();
+      renderCustomerList();
+
+      // Check Config
+      if (!isConfigured()) {
+        openConfigModal();
+        updateSyncStatus('offline', 'Config Adhoori Hai');
+      } else {
+        await syncData();
+      }
+
+      // Sync Listener on online status
+      window.addEventListener('online', () => syncData());
+      window.addEventListener('offline', () => updateSyncStatus('offline', 'Offline (Local mode)'));
+    });
+
+    function isConfigured() {
+      return localStorage.getItem('gh_token') &&
+             localStorage.getItem('gh_user') &&
+             localStorage.getItem('gh_repo') &&
+             localStorage.getItem('sec_pass');
+    }
+
+    function toggleMsgPreference(val) {
+      localStorage.setItem('pw_bahikhata_msgtoggle', val);
+    }
+
+    /* ==========================================
+       CRYPTO ENGINE: PBKDF2 + AES-GCM (256-bit)
+       ========================================== */
+    async function deriveKey(passphrase, salt) {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(passphrase),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+      return crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 100000,
+          hash: "SHA-256"
+        },
+        baseKey,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptPayload(plainText, passphrase) {
+      const enc = new TextEncoder();
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(passphrase, salt);
+
+      const cipher = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        enc.encode(plainText)
+      );
+
+      const combined = new Uint8Array(salt.length + iv.length + cipher.byteLength);
+      combined.set(salt, 0);
+      combined.set(iv, salt.length);
+      combined.set(new Uint8Array(cipher), salt.length + iv.length);
+
+      return btoa(String.fromCharCode.apply(null, combined));
+    }
+
+    async function decryptPayload(base64Data, passphrase) {
+      const binary = atob(base64Data);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+      const salt = bytes.slice(0, 16);
+      const iv = bytes.slice(16, 28);
+      const cipher = bytes.slice(28);
+
+      const key = await deriveKey(passphrase, salt);
+      const decrypted = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        cipher
+      );
+
+      return new TextDecoder().decode(decrypted);
+    }
+
+    /* ==========================================
+       GITHUB 2-WAY SYNC (Offline First)
+       ========================================== */
+    function loadLocalData() {
+      const local = localStorage.getItem('local_bahikhata_cache');
+      if (local) {
+        try {
+          appData = JSON.parse(local);
+        } catch (e) {
+          appData = { customers: [], lastUpdated: Date.now() };
+        }
+      }
+    }
+
+    function saveLocalData() {
+      appData.lastUpdated = Date.now();
+      localStorage.setItem('local_bahikhata_cache', JSON.stringify(appData));
+    }
+
+    function updateSyncStatus(type, msg) {
+      const dot = document.getElementById('syncDot');
+      const txt = document.getElementById('syncText');
+      dot.className = 'dot ' + (type === 'synced' ? 'synced' : type === 'offline' ? 'offline' : '');
+      txt.innerText = msg;
+    }
+
+    async function syncData() {
+      if (!isConfigured() || !navigator.onLine || isSyncing) return;
+      isSyncing = true;
+      updateSyncStatus('syncing', 'Sync Ho Raha...');
+
+      const token = localStorage.getItem('gh_token');
+      const user = localStorage.getItem('gh_user');
+      const repo = localStorage.getItem('gh_repo');
+      const pass = localStorage.getItem('sec_pass');
+      const url = `https://api.github.com/repos/${user}/${repo}/contents/${DB_FILE}`;
+
+      try {
+        const getRes = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (getRes.status === 200) {
+          const fileInfo = await getRes.json();
+          syncSha = fileInfo.sha;
+          const remoteCipher = decodeURIComponent(escape(atob(fileInfo.content)));
+          const decryptedJson = await decryptPayload(remoteCipher, pass);
+          const remoteData = JSON.parse(decryptedJson);
+
+          // Conflict check based on timestamp
+          if (!appData.lastUpdated || remoteData.lastUpdated >= appData.lastUpdated) {
+            appData = remoteData;
+            saveLocalData();
+            renderCustomerList();
+          } else {
+            // Local is newer -> push to remote
+            await pushToGitHub(url, token, pass);
+          }
+          updateSyncStatus('synced', 'Live Cloud Synced');
+        } else if (getRes.status === 404) {
+          // File does not exist, upload first commit
+          await pushToGitHub(url, token, pass);
+          updateSyncStatus('synced', 'First Sync Done');
+        } else {
+          throw new Error('API Auth Error');
+        }
+      } catch (err) {
+        console.error(err);
+        updateSyncStatus('offline', 'Sync Error / Offline');
+      } finally {
+        isSyncing = false;
+      }
+    }
+
+    async function pushToGitHub(url, token, pass) {
+      saveLocalData();
+      const encryptedBase64 = await encryptPayload(JSON.stringify(appData), pass);
+      const payload = {
+        message: `Sync Pandeys Pet World: ${new Date().toISOString()}`,
+        content: btoa(unescape(encodeURIComponent(encryptedBase64))),
+        sha: syncSha || undefined
+      };
+
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (putRes.ok) {
+        const resData = await putRes.json();
+        syncSha = resData.content.sha;
+        updateSyncStatus('synced', 'Live Cloud Synced');
+      } else {
+        throw new Error('Push failed');
+      }
+    }
+
+    /* ==========================================
+       CUSTOMER BEHAVIOR CLASSIFICATION
+       ========================================== */
+    function evaluateCustomerStatus(customer) {
+      const net = getCustomerNetBalance(customer);
+      if (net <= 0) {
+        return { label: 'Vyavharik', class: 'vyavaharik', badge: 'badge-vyavaharik' };
+      }
+
+      // Check oldest unpaid udhar
+      const txs = customer.transactions || [];
+      const now = new Date().getTime();
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+      let isOldDue = false;
+      for (let tx of txs) {
+        if (tx.type === 'GIVEN') {
+          const txTime = new Date(tx.date).getTime();
+          if (now - txTime > thirtyDaysMs) {
+            isOldDue = true;
+            break;
+          }
+        }
+      }
+
+      if (isOldDue) {
+        return { label: 'Defaulter (30+ Din)', class: 'defaulter', badge: 'badge-defaulter' };
+      }
+      return { label: 'Vyavharik', class: 'vyavaharik', badge: 'badge-vyavaharik' };
+    }
+
+    function getCustomerNetBalance(customer) {
+      return (customer.transactions || []).reduce((acc, tx) => {
+        return tx.type === 'GIVEN' ? acc + tx.amount : acc - tx.amount;
+      }, 0);
+    }
+
+    /* ==========================================
+       UI RENDERING & ACTIONS
+       ========================================== */
+    function renderCustomerList() {
+      const container = document.getElementById('customerList');
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      container.innerHTML = '';
+
+      let totalDue = 0;
+      let totalPaid = 0;
+
+      const filtered = appData.customers.filter(c => 
+        c.name.toLowerCase().includes(query) || (c.phone && c.phone.includes(query))
+      );
+
+      filtered.forEach(cust => {
+        const net = getCustomerNetBalance(cust);
+        const status = evaluateCustomerStatus(cust);
+
+        if (net > 0) totalDue += net;
+        else if (net < 0) totalPaid += Math.abs(net);
+
+        const card = document.createElement('div');
+        card.className = `customer-card ${status.class}`;
+        card.onclick = () => openLedger(cust.id);
+        card.innerHTML = `
+          <div class="cust-info">
+            <h4>${escapeHtml(cust.name)}</h4>
+            <p>${cust.phone || 'No Mobile'}</p>
+            <span class="badge ${status.badge}">${status.label}</span>
+          </div>
+          <div class="cust-balance">
+            <span class="${net > 0 ? 'text-danger' : 'text-success'}">₹${Math.abs(net)}</span>
+            <small>${net > 0 ? 'Lena Hai' : net < 0 ? 'Advance' : 'Nill'}</small>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('totalDue').innerText = `₹${totalDue}`;
+      document.getElementById('totalPaid').innerText = `₹${totalPaid}`;
+    }
+
+    function openLedger(id) {
+      currentCustomerId = id;
+      const cust = appData.customers.find(c => c.id === id);
+      if (!cust) return;
+
+      document.getElementById('ledgerCustName').innerText = cust.name;
+      document.getElementById('ledgerCustPhone').innerText = cust.phone ? `📱 ${cust.phone}` : 'Mobile registered nahi hai';
+
+      const net = getCustomerNetBalance(cust);
+      const status = evaluateCustomerStatus(cust);
+
+      const netEl = document.getElementById('ledgerNetBalance');
+      netEl.innerText = `₹${Math.abs(net)} (${net > 0 ? 'Lena Hai' : net < 0 ? 'Advance Jama' : 'Hisaab Chutta'})`;
+      netEl.className = net > 0 ? 'text-danger' : 'text-success';
+
+      const badgeEl = document.getElementById('ledgerBehaviorBadge');
+      badgeEl.className = `badge ${status.badge}`;
+      badgeEl.innerText = status.label;
+
+      // Render Transaction history
+      const txBox = document.getElementById('ledgerTxList');
+      txBox.innerHTML = '';
+      (cust.transactions || []).slice().reverse().forEach(tx => {
+        const row = document.createElement('div');
+        row.className = 'tx-item';
+        row.innerHTML = `
+          <div>
+            <strong>${escapeHtml(tx.note || (tx.type === 'GIVEN' ? 'Udhar' : 'Jama'))}</strong>
+            <div style="font-size:0.75rem; color:var(--muted);">${tx.date}</div>
+          </div>
+          <div style="font-weight:700;" class="${tx.type === 'GIVEN' ? 'text-danger' : 'text-success'}">
+            ${tx.type === 'GIVEN' ? '-' : '+'} ₹${tx.amount}
+          </div>
+        `;
+        txBox.appendChild(row);
+      });
+
+      calcClear();
+      document.getElementById('txNote').value = '';
+      document.getElementById('txDate').valueAsDate = new Date();
+      openModal('ledgerModal');
+    }
+
+    async function recordTransaction(type) {
+      const amount = parseFloat(document.getElementById('calcScreen').value);
+      if (isNaN(amount) || amount <= 0) {
+        alert('Kripya valid amount darj karein');
+        return;
+      }
+
+      const note = document.getElementById('txNote').value.trim();
+      const date = document.getElementById('txDate').value || new Date().toISOString().split('T')[0];
+      const sendMsg = document.getElementById('sendMsgToggle').checked;
+
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+
+      if (!cust.transactions) cust.transactions = [];
+      cust.transactions.push({
+        id: 'tx_' + Date.now(),
+        type: type, // 'GIVEN' or 'GOT'
+        amount: amount,
+        note: note,
+        date: date
+      });
+
+      const updatedNet = getCustomerNetBalance(cust);
+
+      // Trigger Message if checked
+      if (sendMsg && cust.phone) {
+        dispatchCustomerMessage(cust, type, amount, updatedNet, note);
+      }
+
+      saveLocalData();
+      renderCustomerList();
+      closeModal('ledgerModal');
+
+      // Sync live to cloud
+      syncData();
+    }
+
+    function dispatchCustomerMessage(cust, type, amount, currentBalance, note) {
+      const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
+      const validPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+
+      const actionText = type === 'GIVEN'
+        ? `ke roop me ₹${amount} ka hisaab joda gaya hai`
+        : `ke roop me ₹${amount} prapt hue, dhanyawad`;
+
+      const balanceText = currentBalance > 0 
+        ? `Kul shesh rashi (Due): ₹${currentBalance}`
+        : `Hisaab barabar/Advance rashi: ₹${Math.abs(currentBalance)}`;
+
+      const noteDetails = note ? ` (${note})` : '';
+
+      const msg = `Namaste ${cust.name} ji,\n\nPandey's Pet World ke sath vyavahar karne hetu hum aapke aabhari hain.\n\nAapke khate me ${actionText}${noteDetails}.\n${balanceText}.\n\nKisi bhi sahayata ke liye sampark karein.\n- Pandey's Pet World`;
+
+      const encoded = encodeURIComponent(msg);
+      const url = `https://wa.me/${validPhone}?text=${encoded}`;
+      window.open(url, '_blank');
+    }
+
+    /* ==========================================
+       BUILT-IN CALCULATOR
+       ========================================== */
+    let calcExpression = "0";
+
+    function calcPress(val) {
+      if (calcExpression === "0" && !isNaN(val)) {
+        calcExpression = val;
+      } else {
+        calcExpression += val;
+      }
+      document.getElementById('calcScreen').value = calcExpression;
+    }
+
+    function calcClear() {
+      calcExpression = "0";
+      document.getElementById('calcScreen').value = calcExpression;
+    }
+
+    function calcEval() {
+      try {
+        const sanitized = calcExpression.replace(/[^0-9+\-*/.]/g, '');
+        const res = Function(`'use strict'; return (${sanitized})`)();
+        calcExpression = String(Math.round(res * 100) / 100);
+        document.getElementById('calcScreen').value = calcExpression;
+      } catch (e) {
+        document.getElementById('calcScreen').value = "Error";
+        calcExpression = "0";
+      }
+    }
+
+    function applyPreset(pct) {
+      calcEval();
+      let currentVal = parseFloat(document.getElementById('calcScreen').value);
+      if (isNaN(currentVal) || currentVal <= 0) return;
+
+      const delta = (currentVal * pct) / 100;
+      const finalVal = Math.round((currentVal + delta) * 100) / 100;
+      calcExpression = String(finalVal);
+      document.getElementById('calcScreen').value = calcExpression;
+    }
+
+    /* ==========================================
+       CUSTOMER CREATION & SETTINGS
+       ========================================== */
+    function saveNewCustomer() {
+      const name = document.getElementById('newCustName').value.trim();
+      const phone = document.getElementById('newCustPhone').value.trim();
+
+      if (!name) {
+        alert('Customer ka naam likhna anivarya hai.');
+        return;
+      }
+
+      appData.customers.push({
+        id: 'cust_' + Date.now(),
+        name: name,
+        phone: phone,
+        transactions: []
+      });
+
+      document.getElementById('newCustName').value = '';
+      document.getElementById('newCustPhone').value = '';
+
+      saveLocalData();
+      renderCustomerList();
+      closeModal('addCustomerModal');
+      syncData();
+    }
+
+    function openConfigModal() {
+      document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
+      document.getElementById('cfgUsername').value = localStorage.getItem('gh_user') || '';
+      document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
+      document.getElementById('cfgPassphrase').value = localStorage.getItem('sec_pass') || '';
+      openModal('configModal');
+    }
+
+    async function saveSettings() {
+      const token = document.getElementById('cfgToken').value.trim();
+      const user = document.getElementById('cfgUsername').value.trim();
+      const repo = document.getElementById('cfgRepo').value.trim();
+      const pass = document.getElementById('cfgPassphrase').value.trim();
+
+      if (!token || !user || !repo || !pass) {
+        alert('Sabhi credentials bharne anivarya hain.');
+        return;
+      }
+
+      localStorage.setItem('gh_token', token);
+      localStorage.setItem('gh_user', user);
+      localStorage.setItem('gh_repo', repo);
+      localStorage.setItem('sec_pass', pass);
+
+      closeModal('configModal');
+      await syncData();
+    }
+
+    function openAddCustomerModal() { openModal('addCustomerModal'); }
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+  </script>
+</body>
+</html>
