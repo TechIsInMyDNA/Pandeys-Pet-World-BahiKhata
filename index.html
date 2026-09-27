@@ -8,121 +8,155 @@
     :root {
       --primary: #059669;
       --primary-dark: #047857;
-      --bg: #f3f4f6;
+      --primary-light: #ecfdf5;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
       --danger: #ef4444;
+      --danger-bg: #fef2f2;
       --success: #10b981;
-      --border: #e5e7eb;
-      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --success-bg: #f0fdf4;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 75px; user-select: none; }
-    
-    /* Top App Bar */
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 90px; user-select: none; }
+
+    /* Clean Mobile Top Bar */
     .app-header {
-      background: var(--primary);
-      color: white;
-      padding: 14px 16px;
+      background: #ffffff;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 50;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 40;
+      border-bottom: 1px solid var(--border);
     }
-    .app-header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.3px; }
-    .sync-status { font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; }
-    .dot.synced { background: #34d399; }
-    .dot.offline { background: #f87171; }
-
-    /* Summary Bar */
-    .summary-card {
-      background: var(--card-bg);
-      margin: 12px 16px;
-      padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    .brand-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); letter-spacing: -0.3px; }
+    .sync-status { font-size: 0.72rem; display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #eab308; }
+    .dot.synced { background: var(--success); }
+    .dot.offline { background: var(--danger); }
+    .settings-btn {
+      background: #f1f5f9;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
       display: flex;
-      justify-content: space-around;
-      text-align: center;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
     }
-    .summary-item h3 { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
-    .summary-item p { font-size: 1.25rem; font-weight: 700; }
+
+    /* Overall Summary Stats */
+    .summary-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .stat-card h3 { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card p { font-size: 1.35rem; font-weight: 800; margin-top: 4px; }
     .text-danger { color: var(--danger); }
     .text-success { color: var(--success); }
 
-    /* Search & Action Bar */
-    .search-bar { padding: 0 16px 8px; }
+    /* Search & Filter */
+    .search-box { padding: 0 16px 12px; }
     .search-input {
       width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       outline: none;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       background: white;
+      transition: border-color 0.2s;
     }
+    .search-input:focus { border-color: var(--primary); }
 
     /* Customer List */
     .customer-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
     .customer-card {
       background: var(--card-bg);
-      padding: 14px;
-      border-radius: 10px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      padding: 15px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      border-left: 4px solid transparent;
+      position: relative;
+      overflow: hidden;
     }
-    .customer-card.vyavaharik { border-left-color: var(--success); }
-    .customer-card.defaulter { border-left-color: var(--danger); }
-    .cust-info h4 { font-size: 1rem; font-weight: 600; }
-    .cust-info p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .customer-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+    .customer-card.vyavaharik::before { background: var(--success); }
+    .customer-card.defaulter::before { background: var(--danger); }
+
+    .cust-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+    .cust-info p { font-size: 0.8rem; color: var(--text-muted); }
     .badge {
       display: inline-block;
       font-size: 0.65rem;
       font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
     }
-    .badge-vyavaharik { background: #d1fae5; color: #065f46; }
-    .badge-defaulter { background: #fee2e2; color: #991b1b; }
+    .badge-vyavaharik { background: var(--success-bg); color: #047857; }
+    .badge-defaulter { background: var(--danger-bg); color: #b91c1c; }
     .cust-balance { text-align: right; }
-    .cust-balance span { font-size: 1.05rem; font-weight: 700; display: block; }
-    .cust-balance small { font-size: 0.7rem; color: var(--muted); }
+    .cust-balance span { font-size: 1.15rem; font-weight: 800; display: block; }
+    .cust-balance small { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
 
-    /* FAB Buttons */
-    .fab {
+    /* Bottom Action Button (FAB) */
+    .fab-container {
       position: fixed;
-      bottom: 24px;
-      right: 20px;
+      bottom: 20px;
+      left: 16px;
+      right: 16px;
+      z-index: 30;
+    }
+    .fab {
+      width: 100%;
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: 50px;
-      padding: 14px 20px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(5,150,105,0.4);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(5,150,105,0.25);
       cursor: pointer;
     }
 
-    /* Modal Sheet */
+    /* Modal / Bottom Sheet */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(3px);
       z-index: 100;
       justify-content: center;
       align-items: flex-end;
@@ -131,94 +165,125 @@
     .modal-content {
       background: white;
       width: 100%;
-      max-width: 500px;
-      border-radius: 20px 20px 0 0;
-      padding: 20px;
-      max-height: 90vh;
+      max-width: 480px;
+      border-radius: 24px 24px 0 0;
+      padding: 22px 20px;
+      max-height: 92vh;
       overflow-y: auto;
-      animation: slideUp 0.25s ease-out;
+      animation: sheetUp 0.22s ease-out;
     }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .modal-header h2 { font-size: 1.1rem; }
-    .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; }
+    .modal-header h2 { font-size: 1.15rem; font-weight: 800; }
+    .close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
 
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
     .form-control {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 10px;
       border: 1px solid var(--border);
       font-size: 0.95rem;
       outline: none;
+      background: #f8fafc;
     }
+    .form-control:focus { background: #ffffff; border-color: var(--primary); }
 
-    /* Custom Calculator & Presets */
-    .calc-box {
-      background: #f9fafb;
+    /* Calculator & Dynamic Presets */
+    .calc-container {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       padding: 10px;
-      border-radius: 8px;
-      border: 1px dashed var(--border);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .calc-screen {
       width: 100%;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.5rem;
+      font-weight: 800;
       text-align: right;
-      padding: 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 8px;
-      background: white;
-    }
-    .preset-chips { display: flex; gap: 8px; margin-bottom: 8px; }
-    .preset-chip {
-      background: #e5e7eb;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .calc-pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .calc-btn {
-      padding: 10px;
+      padding: 8px 12px;
       background: white;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* Checkbox & Buttons */
-    .checkbox-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 0.85rem; }
-    .btn-row { display: flex; gap: 10px; margin-top: 16px; }
-    .btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
       border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .preset-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .preset-chip {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 4px;
+      font-size: 0.8rem;
       font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .calc-key {
+      padding: 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .calc-key.op { background: #f1f5f9; color: var(--primary); }
+
+    /* Message Selection Checkboxes */
+    .message-options {
+      display: flex;
+      gap: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0 16px;
+    }
+    .chk-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chk-label input { width: 17px; height: 17px; accent-color: var(--primary); }
+
+    /* Dual Action Buttons */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-action {
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
       font-size: 0.95rem;
       cursor: pointer;
     }
-    .btn-give { background: var(--danger); color: white; }
-    .btn-got { background: var(--success); color: white; }
-    .btn-primary { background: var(--primary); color: white; width: 100%; }
+    .btn-debit { background: var(--danger); color: white; }
+    .btn-credit { background: var(--success); color: white; }
+    .btn-full { width: 100%; background: var(--primary); color: white; padding: 14px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; }
 
-    /* Detail View Ledger */
-    .tx-item {
+    /* Ledger Tx History List */
+    .tx-scrollbox { max-height: 140px; overflow-y: auto; margin-bottom: 14px; }
+    .tx-row {
       display: flex;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
       font-size: 0.85rem;
     }
-    .tx-item:last-child { border: none; }
   </style>
 </head>
 <body>
@@ -226,185 +291,209 @@
   <!-- App Header -->
   <header class="app-header">
     <div>
-      <h1>Pandeys Pet World</h1>
+      <div class="brand-title">Pandeys Pet World</div>
       <div class="sync-status">
         <span class="dot" id="syncDot"></span>
-        <span id="syncText">Init...</span>
+        <span id="syncText">Connecting...</span>
       </div>
     </div>
-    <button onclick="openConfigModal()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">⚙️</button>
+    <button class="settings-btn" onclick="openConfigModal()">⚙️</button>
   </header>
 
-  <!-- Summary Balance -->
-  <section class="summary-card">
-    <div class="summary-item">
-      <h3>Lena Hai (Udhar)</h3>
+  <!-- Summary Stats -->
+  <section class="summary-container">
+    <div class="stat-card">
+      <h3>Kul Lena Hai</h3>
       <p class="text-danger" id="totalDue">₹0</p>
     </div>
-    <div class="summary-item">
-      <h3>Kul Jama</h3>
+    <div class="stat-card">
+      <h3>Kul Advance/Jama</h3>
       <p class="text-success" id="totalPaid">₹0</p>
     </div>
   </section>
 
   <!-- Search Filter -->
-  <div class="search-bar">
-    <input type="text" id="searchInput" class="search-input" placeholder="Customer ya mobile number khoje..." oninput="renderCustomerList()">
+  <div class="search-box">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search customer or mobile..." oninput="renderCustomerList()">
   </div>
 
-  <!-- Customer Directory -->
+  <!-- Customer Ledger Cards -->
   <main class="customer-list" id="customerList"></main>
 
-  <!-- Add Customer FAB -->
-  <button class="fab" onclick="openAddCustomerModal()">+ Add Customer</button>
+  <!-- Bottom CTA -->
+  <div class="fab-container">
+    <button class="fab" onclick="openAddCustomerModal()">+ Add Customer</button>
+  </div>
 
-  <!-- Add Customer Modal -->
+  <!-- Modal: Add Customer -->
   <div class="modal" id="addCustomerModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Naya Customer Jodein</h2>
+        <h2>Add Customer</h2>
         <button class="close-btn" onclick="closeModal('addCustomerModal')">&times;</button>
       </div>
       <div class="form-group">
-        <label>Customer Naam *</label>
-        <input type="text" id="newCustName" class="form-control" placeholder="e.g. Ramesh Kumar">
+        <label>Customer Name *</label>
+        <input type="text" id="newCustName" class="form-control" placeholder="e.g. Rahul Sharma">
       </div>
       <div class="form-group">
         <label>Mobile Number</label>
         <input type="tel" id="newCustPhone" class="form-control" placeholder="10-digit number">
       </div>
-      <button class="btn btn-primary" onclick="saveNewCustomer()">Save Karein</button>
+      <button class="btn-full" onclick="saveNewCustomer()">Save Customer</button>
     </div>
   </div>
 
-  <!-- Customer Ledger Details Modal -->
+  <!-- Modal: Ledger Entry -->
   <div class="modal" id="ledgerModal">
     <div class="modal-content">
       <div class="modal-header">
         <div>
           <h2 id="ledgerCustName">Customer</h2>
-          <p id="ledgerCustPhone" style="font-size:0.8rem; color:var(--muted);"></p>
+          <p id="ledgerCustPhone" style="font-size:0.8rem; color:var(--text-muted);"></p>
         </div>
         <button class="close-btn" onclick="closeModal('ledgerModal')">&times;</button>
       </div>
 
-      <div style="background:#f9fafb; padding:12px; border-radius:8px; margin-bottom:12px; text-align:center;">
-        <span style="font-size:0.8rem; color:var(--muted);">Total Bakaya (Net Balance):</span>
-        <h3 id="ledgerNetBalance" style="font-size:1.4rem;">₹0</h3>
+      <!-- Current Balance Banner -->
+      <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:12px; margin-bottom:12px; text-align:center;">
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">NET BALANCE</span>
+        <h3 id="ledgerNetBalance" style="font-size:1.4rem; font-weight:800; margin:3px 0;">₹0</h3>
         <span id="ledgerBehaviorBadge" class="badge"></span>
       </div>
 
-      <div style="max-height:180px; overflow-y:auto; margin-bottom:12px;" id="ledgerTxList"></div>
+      <div class="tx-scrollbox" id="ledgerTxList"></div>
 
-      <!-- Built-in Calculator -->
-      <div class="calc-box">
+      <!-- Inbuilt Calculator -->
+      <div class="calc-container">
         <input type="text" id="calcScreen" class="calc-screen" value="0" readonly>
-        <div class="preset-chips">
-          <button class="preset-chip" onclick="applyPreset(-5)">-5% Disc</button>
-          <button class="preset-chip" onclick="applyPreset(8)">+8% Tax</button>
-          <button class="preset-chip" onclick="applyPreset(-10)">-10% Disc</button>
-        </div>
-        <div class="calc-pad">
-          <button class="calc-btn" onclick="calcPress('7')">7</button>
-          <button class="calc-btn" onclick="calcPress('8')">8</button>
-          <button class="calc-btn" onclick="calcPress('9')">9</button>
-          <button class="calc-btn" onclick="calcPress('/')">÷</button>
-          <button class="calc-btn" onclick="calcPress('4')">4</button>
-          <button class="calc-btn" onclick="calcPress('5')">5</button>
-          <button class="calc-btn" onclick="calcPress('6')">6</button>
-          <button class="calc-btn" onclick="calcPress('*')">×</button>
-          <button class="calc-btn" onclick="calcPress('1')">1</button>
-          <button class="calc-btn" onclick="calcPress('2')">2</button>
-          <button class="calc-btn" onclick="calcPress('3')">3</button>
-          <button class="calc-btn" onclick="calcPress('-')">-</button>
-          <button class="calc-btn" onclick="calcClear()">C</button>
-          <button class="calc-btn" onclick="calcPress('0')">0</button>
-          <button class="calc-btn" onclick="calcEval()">=</button>
-          <button class="calc-btn" onclick="calcPress('+')">+</button>
+        
+        <!-- Editable Presets rendered dynamically -->
+        <div class="preset-row" id="presetButtonsContainer"></div>
+
+        <div class="calc-grid">
+          <button class="calc-key" onclick="calcPress('7')">7</button>
+          <button class="calc-key" onclick="calcPress('8')">8</button>
+          <button class="calc-key" onclick="calcPress('9')">9</button>
+          <button class="calc-key op" onclick="calcPress('/')">÷</button>
+          <button class="calc-key" onclick="calcPress('4')">4</button>
+          <button class="calc-key" onclick="calcPress('5')">5</button>
+          <button class="calc-key" onclick="calcPress('6')">6</button>
+          <button class="calc-key op" onclick="calcPress('*')">×</button>
+          <button class="calc-key" onclick="calcPress('1')">1</button>
+          <button class="calc-key" onclick="calcPress('2')">2</button>
+          <button class="calc-key" onclick="calcPress('3')">3</button>
+          <button class="calc-key op" onclick="calcPress('-')">-</button>
+          <button class="calc-key" onclick="calcClear()">C</button>
+          <button class="calc-key" onclick="calcPress('0')">0</button>
+          <button class="calc-key op" onclick="calcEval()">=</button>
+          <button class="calc-key op" onclick="calcPress('+')">+</button>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Tarikh (Date)</label>
+        <label>Date</label>
         <input type="date" id="txDate" class="form-control">
       </div>
       <div class="form-group">
         <label>Item / Note</label>
-        <input type="text" id="txNote" class="form-control" placeholder="e.g. Pedigree 3kg + Belt">
+        <input type="text" id="txNote" class="form-control" placeholder="e.g. Royal Canin 4kg">
       </div>
 
-      <div class="checkbox-row">
-        <input type="checkbox" id="sendMsgToggle" onchange="toggleMsgPreference(this.checked)">
-        <label for="sendMsgToggle">WhatsApp / SMS Vivran Bhejein</label>
+      <!-- Separate WhatsApp & SMS Checkboxes -->
+      <div class="message-options">
+        <label class="chk-label">
+          <input type="checkbox" id="chkWhatsApp" onchange="persistMessagePreferences()">
+          <span>WhatsApp Message</span>
+        </label>
+        <label class="chk-label">
+          <input type="checkbox" id="chkTextSMS" onchange="persistMessagePreferences()">
+          <span>Text SMS</span>
+        </label>
       </div>
 
-      <div class="btn-row">
-        <button class="btn btn-give" onclick="recordTransaction('GIVEN')">Udhar Diya (Debit)</button>
-        <button class="btn btn-got" onclick="recordTransaction('GOT')">Prapt Hua (Credit)</button>
+      <div class="action-grid">
+        <button class="btn-action btn-debit" onclick="recordTransaction('GIVEN')">Udhar Diya</button>
+        <button class="btn-action btn-credit" onclick="recordTransaction('GOT')">Jama Kiya</button>
       </div>
     </div>
   </div>
 
-  <!-- Settings / Security Sync Modal -->
+  <!-- Modal: Settings & Presets Configuration -->
   <div class="modal" id="configModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Sync & Security Settings</h2>
+        <h2>App & Sync Settings</h2>
         <button class="close-btn" onclick="closeModal('configModal')">&times;</button>
       </div>
+
+      <h4 style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">CALCULATOR PRESETS (%)</h4>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">Preset 1</label>
+          <input type="number" id="cfgPreset1" class="form-control" placeholder="-5">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">Preset 2</label>
+          <input type="number" id="cfgPreset2" class="form-control" placeholder="8">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">Preset 3</label>
+          <input type="number" id="cfgPreset3" class="form-control" placeholder="-10">
+        </div>
+      </div>
+
+      <h4 style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">GITHUB CLOUD SYNC & ENCRYPTION</h4>
       <div class="form-group">
-        <label>GitHub Personal Access Token (PAT) *</label>
+        <label>GitHub Personal Access Token</label>
         <input type="password" id="cfgToken" class="form-control" placeholder="ghp_xxxxxxxxxxxx">
       </div>
       <div class="form-group">
-        <label>GitHub Username *</label>
-        <input type="text" id="cfgUsername" class="form-control" placeholder="e.g. user-name">
+        <label>GitHub Username</label>
+        <input type="text" id="cfgUsername" class="form-control" placeholder="Username">
       </div>
       <div class="form-group">
-        <label>Repository Name *</label>
-        <input type="text" id="cfgRepo" class="form-control" placeholder="e.g. petworld-bahikhata">
+        <label>Repository Name</label>
+        <input type="text" id="cfgRepo" class="form-control" placeholder="Repo Name">
       </div>
       <div class="form-group">
-        <label>Master Passphrase (AES-256 GCM) *</label>
-        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Military-grade key">
+        <label>Master Passphrase (AES-GCM 256)</label>
+        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Encryption Key">
       </div>
-      <button class="btn btn-primary" onclick="saveSettings()">Save & Sync Database</button>
+
+      <button class="btn-full" onclick="saveSettings()">Save & Apply</button>
     </div>
   </div>
 
   <script>
-    // App State
+    // State management
     let appData = { customers: [], lastUpdated: 0 };
     let currentCustomerId = null;
     let syncSha = null;
     let isSyncing = false;
+    let calcExpression = "0";
 
     const DB_FILE = "bahikhata_data.enc";
 
-    // Initialize Default State
     window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('txDate').valueAsDate = new Date();
-      
-      // Load cached message toggle preference
-      const savedToggle = localStorage.getItem('pw_bahikhata_msgtoggle');
-      if (savedToggle !== null) {
-        document.getElementById('sendMsgToggle').checked = (savedToggle === 'true');
-      }
+
+      // Load presets & message preferences
+      loadPresetButtons();
+      loadMessagePreferences();
 
       loadLocalData();
       renderCustomerList();
 
-      // Check Config
       if (!isConfigured()) {
         openConfigModal();
-        updateSyncStatus('offline', 'Config Adhoori Hai');
+        updateSyncStatus('offline', 'Setup Required');
       } else {
         await syncData();
       }
 
-      // Sync Listener on online status
       window.addEventListener('online', () => syncData());
-      window.addEventListener('offline', () => updateSyncStatus('offline', 'Offline (Local mode)'));
+      window.addEventListener('offline', () => updateSyncStatus('offline', 'Offline (Local)'));
     });
 
     function isConfigured() {
@@ -414,8 +503,32 @@
              localStorage.getItem('sec_pass');
     }
 
-    function toggleMsgPreference(val) {
-      localStorage.setItem('pw_bahikhata_msgtoggle', val);
+    /* ==========================================
+       MESSAGE PREFERENCES & PRESET BUTTONS
+       ========================================== */
+    function loadPresetButtons() {
+      const p1 = parseFloat(localStorage.getItem('cfg_p1') || "-5");
+      const p2 = parseFloat(localStorage.getItem('cfg_p2') || "8");
+      const p3 = parseFloat(localStorage.getItem('cfg_p3') || "-10");
+
+      const container = document.getElementById('presetButtonsContainer');
+      container.innerHTML = `
+        <button class="preset-chip" onclick="applyPreset(${p1})">${p1 > 0 ? '+' : ''}${p1}%</button>
+        <button class="preset-chip" onclick="applyPreset(${p2})">${p2 > 0 ? '+' : ''}${p2}%</button>
+        <button class="preset-chip" onclick="applyPreset(${p3})">${p3 > 0 ? '+' : ''}${p3}%</button>
+      `;
+    }
+
+    function loadMessagePreferences() {
+      const waPref = localStorage.getItem('pref_msg_wa');
+      const smsPref = localStorage.getItem('pref_msg_sms');
+      document.getElementById('chkWhatsApp').checked = (waPref === 'true');
+      document.getElementById('chkTextSMS').checked = (smsPref === 'true');
+    }
+
+    function persistMessagePreferences() {
+      localStorage.setItem('pref_msg_wa', document.getElementById('chkWhatsApp').checked);
+      localStorage.setItem('pref_msg_sms', document.getElementById('chkTextSMS').checked);
     }
 
     /* ==========================================
@@ -431,12 +544,7 @@
         ["deriveKey"]
       );
       return crypto.subtle.deriveKey(
-        {
-          name: "PBKDF2",
-          salt: salt,
-          iterations: 100000,
-          hash: "SHA-256"
-        },
+        { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
         baseKey,
         { name: "AES-GCM", length: 256 },
         false,
@@ -450,12 +558,7 @@
       const iv = crypto.getRandomValues(new Uint8Array(12));
       const key = await deriveKey(passphrase, salt);
 
-      const cipher = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: iv },
-        key,
-        enc.encode(plainText)
-      );
-
+      const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plainText));
       const combined = new Uint8Array(salt.length + iv.length + cipher.byteLength);
       combined.set(salt, 0);
       combined.set(iv, salt.length);
@@ -474,26 +577,18 @@
       const cipher = bytes.slice(28);
 
       const key = await deriveKey(passphrase, salt);
-      const decrypted = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: iv },
-        key,
-        cipher
-      );
+      const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, cipher);
 
       return new TextDecoder().decode(decrypted);
     }
 
     /* ==========================================
-       GITHUB 2-WAY SYNC (Offline First)
+       GITHUB 2-WAY SYNC
        ========================================== */
     function loadLocalData() {
       const local = localStorage.getItem('local_bahikhata_cache');
       if (local) {
-        try {
-          appData = JSON.parse(local);
-        } catch (e) {
-          appData = { customers: [], lastUpdated: Date.now() };
-        }
+        try { appData = JSON.parse(local); } catch (e) { appData = { customers: [], lastUpdated: Date.now() }; }
       }
     }
 
@@ -512,7 +607,7 @@
     async function syncData() {
       if (!isConfigured() || !navigator.onLine || isSyncing) return;
       isSyncing = true;
-      updateSyncStatus('syncing', 'Sync Ho Raha...');
+      updateSyncStatus('syncing', 'Syncing...');
 
       const token = localStorage.getItem('gh_token');
       const user = localStorage.getItem('gh_user');
@@ -522,10 +617,7 @@
 
       try {
         const getRes = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
         });
 
         if (getRes.status === 200) {
@@ -535,26 +627,23 @@
           const decryptedJson = await decryptPayload(remoteCipher, pass);
           const remoteData = JSON.parse(decryptedJson);
 
-          // Conflict check based on timestamp
           if (!appData.lastUpdated || remoteData.lastUpdated >= appData.lastUpdated) {
             appData = remoteData;
             saveLocalData();
             renderCustomerList();
           } else {
-            // Local is newer -> push to remote
             await pushToGitHub(url, token, pass);
           }
-          updateSyncStatus('synced', 'Live Cloud Synced');
+          updateSyncStatus('synced', 'Live Cloud Sync');
         } else if (getRes.status === 404) {
-          // File does not exist, upload first commit
           await pushToGitHub(url, token, pass);
-          updateSyncStatus('synced', 'First Sync Done');
+          updateSyncStatus('synced', 'Cloud Synced');
         } else {
-          throw new Error('API Auth Error');
+          throw new Error('Auth or repo mismatch');
         }
       } catch (err) {
         console.error(err);
-        updateSyncStatus('offline', 'Sync Error / Offline');
+        updateSyncStatus('offline', 'Sync Error');
       } finally {
         isSyncing = false;
       }
@@ -571,20 +660,14 @@
 
       const putRes = await fetch(url, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       if (putRes.ok) {
         const resData = await putRes.json();
         syncSha = resData.content.sha;
-        updateSyncStatus('synced', 'Live Cloud Synced');
-      } else {
-        throw new Error('Push failed');
+        updateSyncStatus('synced', 'Live Cloud Sync');
       }
     }
 
@@ -593,13 +676,10 @@
        ========================================== */
     function evaluateCustomerStatus(customer) {
       const net = getCustomerNetBalance(customer);
-      if (net <= 0) {
-        return { label: 'Vyavharik', class: 'vyavaharik', badge: 'badge-vyavaharik' };
-      }
+      if (net <= 0) return { label: 'Vyavharik', class: 'vyavaharik', badge: 'badge-vyavaharik' };
 
-      // Check oldest unpaid udhar
       const txs = customer.transactions || [];
-      const now = new Date().getTime();
+      const now = Date.now();
       const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
       let isOldDue = false;
@@ -613,9 +693,7 @@
         }
       }
 
-      if (isOldDue) {
-        return { label: 'Defaulter (30+ Din)', class: 'defaulter', badge: 'badge-defaulter' };
-      }
+      if (isOldDue) return { label: 'Defaulter (30+ Din)', class: 'defaulter', badge: 'badge-defaulter' };
       return { label: 'Vyavharik', class: 'vyavaharik', badge: 'badge-vyavaharik' };
     }
 
@@ -626,7 +704,7 @@
     }
 
     /* ==========================================
-       UI RENDERING & ACTIONS
+       UI RENDERING & TRANSACTIONS
        ========================================== */
     function renderCustomerList() {
       const container = document.getElementById('customerList');
@@ -653,12 +731,12 @@
         card.innerHTML = `
           <div class="cust-info">
             <h4>${escapeHtml(cust.name)}</h4>
-            <p>${cust.phone || 'No Mobile'}</p>
+            <p>${cust.phone || 'No Contact'}</p>
             <span class="badge ${status.badge}">${status.label}</span>
           </div>
           <div class="cust-balance">
             <span class="${net > 0 ? 'text-danger' : 'text-success'}">₹${Math.abs(net)}</span>
-            <small>${net > 0 ? 'Lena Hai' : net < 0 ? 'Advance' : 'Nill'}</small>
+            <small>${net > 0 ? 'Lena Hai' : net < 0 ? 'Advance' : 'Chutta'}</small>
           </div>
         `;
         container.appendChild(card);
@@ -674,29 +752,28 @@
       if (!cust) return;
 
       document.getElementById('ledgerCustName').innerText = cust.name;
-      document.getElementById('ledgerCustPhone').innerText = cust.phone ? `📱 ${cust.phone}` : 'Mobile registered nahi hai';
+      document.getElementById('ledgerCustPhone').innerText = cust.phone ? `📱 ${cust.phone}` : 'No phone registered';
 
       const net = getCustomerNetBalance(cust);
       const status = evaluateCustomerStatus(cust);
 
       const netEl = document.getElementById('ledgerNetBalance');
-      netEl.innerText = `₹${Math.abs(net)} (${net > 0 ? 'Lena Hai' : net < 0 ? 'Advance Jama' : 'Hisaab Chutta'})`;
+      netEl.innerText = `₹${Math.abs(net)} (${net > 0 ? 'Lena Hai' : net < 0 ? 'Advance Jama' : 'Hisaab Nill'})`;
       netEl.className = net > 0 ? 'text-danger' : 'text-success';
 
       const badgeEl = document.getElementById('ledgerBehaviorBadge');
       badgeEl.className = `badge ${status.badge}`;
       badgeEl.innerText = status.label;
 
-      // Render Transaction history
       const txBox = document.getElementById('ledgerTxList');
       txBox.innerHTML = '';
       (cust.transactions || []).slice().reverse().forEach(tx => {
         const row = document.createElement('div');
-        row.className = 'tx-item';
+        row.className = 'tx-row';
         row.innerHTML = `
           <div>
-            <strong>${escapeHtml(tx.note || (tx.type === 'GIVEN' ? 'Udhar' : 'Jama'))}</strong>
-            <div style="font-size:0.75rem; color:var(--muted);">${tx.date}</div>
+            <strong>${escapeHtml(tx.note || (tx.type === 'GIVEN' ? 'Udhar Diya' : 'Jama Hua'))}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${tx.date}</div>
           </div>
           <div style="font-weight:700;" class="${tx.type === 'GIVEN' ? 'text-danger' : 'text-success'}">
             ${tx.type === 'GIVEN' ? '-' : '+'} ₹${tx.amount}
@@ -720,7 +797,8 @@
 
       const note = document.getElementById('txNote').value.trim();
       const date = document.getElementById('txDate').value || new Date().toISOString().split('T')[0];
-      const sendMsg = document.getElementById('sendMsgToggle').checked;
+      const sendWA = document.getElementById('chkWhatsApp').checked;
+      const sendSMS = document.getElementById('chkTextSMS').checked;
 
       const cust = appData.customers.find(c => c.id === currentCustomerId);
       if (!cust) return;
@@ -728,7 +806,7 @@
       if (!cust.transactions) cust.transactions = [];
       cust.transactions.push({
         id: 'tx_' + Date.now(),
-        type: type, // 'GIVEN' or 'GOT'
+        type: type,
         amount: amount,
         note: note,
         date: date
@@ -736,51 +814,47 @@
 
       const updatedNet = getCustomerNetBalance(cust);
 
-      // Trigger Message if checked
-      if (sendMsg && cust.phone) {
-        dispatchCustomerMessage(cust, type, amount, updatedNet, note);
+      // Trigger Notifications based on checkboxes
+      if (cust.phone) {
+        const messageText = composeMessage(cust.name, type, amount, updatedNet, note);
+        const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
+
+        if (sendWA) {
+          const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(messageText)}`, '_blank');
+        }
+        if (sendSMS) {
+          // Open default native SMS intent
+          window.open(`sms:${cleanPhone}?body=${encodeURIComponent(messageText)}`, '_blank');
+        }
       }
 
       saveLocalData();
       renderCustomerList();
       closeModal('ledgerModal');
-
-      // Sync live to cloud
       syncData();
     }
 
-    function dispatchCustomerMessage(cust, type, amount, currentBalance, note) {
-      const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
-      const validPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-
+    function composeMessage(custName, type, amount, currentBalance, note) {
       const actionText = type === 'GIVEN'
         ? `ke roop me ₹${amount} ka hisaab joda gaya hai`
         : `ke roop me ₹${amount} prapt hue, dhanyawad`;
 
       const balanceText = currentBalance > 0 
-        ? `Kul shesh rashi (Due): ₹${currentBalance}`
-        : `Hisaab barabar/Advance rashi: ₹${Math.abs(currentBalance)}`;
+        ? `Kul baki rashi (Due): ₹${currentBalance}`
+        : `Hisaab barabar/Advance: ₹${Math.abs(currentBalance)}`;
 
       const noteDetails = note ? ` (${note})` : '';
 
-      const msg = `Namaste ${cust.name} ji,\n\nPandey's Pet World ke sath vyavahar karne hetu hum aapke aabhari hain.\n\nAapke khate me ${actionText}${noteDetails}.\n${balanceText}.\n\nKisi bhi sahayata ke liye sampark karein.\n- Pandey's Pet World`;
-
-      const encoded = encodeURIComponent(msg);
-      const url = `https://wa.me/${validPhone}?text=${encoded}`;
-      window.open(url, '_blank');
+      return `Namaste ${custName} ji,\n\nPandey's Pet World ke sath vyavahar hetu aabhar.\nAapke khate me ${actionText}${noteDetails}.\n${balanceText}.\n\n- Pandey's Pet World`;
     }
 
     /* ==========================================
        BUILT-IN CALCULATOR
        ========================================== */
-    let calcExpression = "0";
-
     function calcPress(val) {
-      if (calcExpression === "0" && !isNaN(val)) {
-        calcExpression = val;
-      } else {
-        calcExpression += val;
-      }
+      if (calcExpression === "0" && !isNaN(val)) calcExpression = val;
+      else calcExpression += val;
       document.getElementById('calcScreen').value = calcExpression;
     }
 
@@ -820,7 +894,7 @@
       const phone = document.getElementById('newCustPhone').value.trim();
 
       if (!name) {
-        alert('Customer ka naam likhna anivarya hai.');
+        alert('Customer naam bharna zaroori hai.');
         return;
       }
 
@@ -845,6 +919,11 @@
       document.getElementById('cfgUsername').value = localStorage.getItem('gh_user') || '';
       document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
       document.getElementById('cfgPassphrase').value = localStorage.getItem('sec_pass') || '';
+
+      document.getElementById('cfgPreset1').value = localStorage.getItem('cfg_p1') || "-5";
+      document.getElementById('cfgPreset2').value = localStorage.getItem('cfg_p2') || "8";
+      document.getElementById('cfgPreset3').value = localStorage.getItem('cfg_p3') || "-10";
+
       openModal('configModal');
     }
 
@@ -854,15 +933,21 @@
       const repo = document.getElementById('cfgRepo').value.trim();
       const pass = document.getElementById('cfgPassphrase').value.trim();
 
-      if (!token || !user || !repo || !pass) {
-        alert('Sabhi credentials bharne anivarya hain.');
-        return;
-      }
+      const p1 = document.getElementById('cfgPreset1').value.trim() || "-5";
+      const p2 = document.getElementById('cfgPreset2').value.trim() || "8";
+      const p3 = document.getElementById('cfgPreset3').value.trim() || "-10";
 
-      localStorage.setItem('gh_token', token);
-      localStorage.setItem('gh_user', user);
-      localStorage.setItem('gh_repo', repo);
-      localStorage.setItem('sec_pass', pass);
+      localStorage.setItem('cfg_p1', p1);
+      localStorage.setItem('cfg_p2', p2);
+      localStorage.setItem('cfg_p3', p3);
+      loadPresetButtons();
+
+      if (token && user && repo && pass) {
+        localStorage.setItem('gh_token', token);
+        localStorage.setItem('gh_user', user);
+        localStorage.setItem('gh_repo', repo);
+        localStorage.setItem('sec_pass', pass);
+      }
 
       closeModal('configModal');
       await syncData();
