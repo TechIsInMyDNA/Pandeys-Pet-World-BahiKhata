@@ -301,6 +301,17 @@
     .btn-sm-danger { color: var(--danger); background: var(--danger-bg); border-color: #fecaca; }
     .btn-sm-warning { color: #92400e; background: var(--warning-bg); border-color: #fde68a; }
     .btn-sm-pdf { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
+
+    .share-guide-box {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
+      color: #065f46;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -406,23 +417,28 @@
     </div>
   </div>
 
-  <!-- Modal: PDF Range Filter & Direct Routing -->
+  <!-- Modal: PDF Range Filter & WhatsApp Native Share -->
   <div class="modal" id="pdfFilterModal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Export & Send Statement</h2>
         <button class="close-btn" onclick="closeModal('pdfFilterModal')">&times;</button>
       </div>
-      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">Date range filter karein (Khali chhodne par poora hisaab aayega):</p>
+      
+      <div class="share-guide-box">
+        📲 <strong>WhatsApp Attach Flow:</strong><br>
+        Button dabate hi PDF generate hokar WhatsApp direct open hoga. Agar WhatsApp automatic attach na kare, toh PDF phone me save ho jayegi aur chat me '+' icon se direct bheji ja sakegi.
+      </div>
+
       <div class="form-group">
-        <label>From Date</label>
+        <label>From Date (Beginning se rakhne ke liye khali chhodhein)</label>
         <input type="date" id="pdfDateFrom" class="form-control">
       </div>
       <div class="form-group">
-        <label>To Date</label>
+        <label>To Date (Aaj tak rakhne ke liye khali chhodhein)</label>
         <input type="date" id="pdfDateTo" class="form-control">
       </div>
-      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executePdfAndWhatsAppReminder()">📄 Download & Send Statement via WhatsApp</button>
+      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executePdfAndWhatsAppReminder()">🚀 Share PDF & Reminder on WhatsApp</button>
       <button class="btn-outline" onclick="closeModal('pdfFilterModal')">Radd Karein</button>
     </div>
   </div>
@@ -632,7 +648,7 @@
     }
 
     /* ========================================================
-       RELIABLE PDF DOWNLOAD & WHATSAPP ROUTING
+       RELIABLE PDF + DIRECT NATIVE WHATSAPP SHARE
        ======================================================== */
     function openPdfFilterModal() {
       closeModal('ledgerModal');
@@ -744,50 +760,44 @@
         ? `वर्तमान कुल शेष (बाकी) राशि: ₹${net}` 
         : (net < 0 ? `वर्तमान एडवांस जमा राशि: ₹${Math.abs(net)}` : 'वर्तमान हिसाब-किताब: पूर्णतः चुकता');
 
-      const reminderWithPdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nआशा है आप एवं आपके सभी प्यारे पालतू साथी (Pets) सपरिवार सकुशल व आनंद में होंगे।\n\nपांडेयस पेट वर्ल्ड के प्रति आपका निरंतर विश्वास और स्नेह हमारे लिए अत्यंत आदरणीय है। एक छोटा सा विमर्श साझा करना था कि कोई भी व्यापार और आपसी संबंध केवल विश्वास और समय पर पूंजी की रोटेशन (Rolling) पर ही सुचारू रूप से चलता है।\n\nआपके खाते का विस्तृत लेजर स्टेटमेंट (Statement PDF) तैयार कर दिया गया है। ${daysText} से ${balanceText} देय आ रही है।\n\nयदि संभव हो तो सुविधानुसार इसे क्लियर या रोल करवा दें, जिससे व्यवस्था और स्टॉक की आपूर्ति बिना रुकावट बनी रहे।\n\nआपके अमूल्य सहयोग और स्नेह के लिए हम सदैव आभारी रहेंगे। आपका दिन शुभ और मंगलमय हो!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+      const reminderWithPdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nआशा है आप एवं आपके सभी प्यारे पालतू साथी (Pets) सपरिवार सकुशल व आनंद में होंगे।\n\nपांडेयस पेट वर्ल्ड के प्रति आपका निरंतर विश्वास और स्नेह हमारे लिए अत्यंत आदरणीय है। एक छोटा सा विमर्श साझा करना था कि कोई भी व्यापार और आपसी संबंध केवल विश्वास और समय पर पूंजी की रोटेशन (Rolling) पर ही सुचारू रूप से चलता है।\n\nआपके खाते का विस्तृत लेजर स्टेटमेंट (Statement PDF) संलग्न/तैयार कर दिया गया है। ${daysText} से ${balanceText} देय आ रही है।\n\nयदि संभव हो तो सुविधानुसार इसे क्लियर या रोल करवा दें, जिससे व्यवस्था और स्टॉक की आपूर्ति बिना रुकावट बनी रहे।\n\nआपके अमूल्य सहयोग और स्नेह के लिए हम सदैव आभारी रहेंगे। आपका दिन शुभ और मंगलमय हो!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
 
       const fileName = `${cust.name.replace(/\s+/g, '_')}_Ledger_Statement.pdf`;
-
-      // 3. Robust Direct File Share (Web Share API) OR Guaranteed Download + WA Popup
       const pdfBlob = doc.output('blob');
       const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-      let sharedDirectly = false;
+      // 3. Try Direct Native System Share (WhatsApp Intent with File Attachment)
       if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
         try {
           await navigator.share({
             files: [pdfFile],
-            title: fileName,
+            title: `Statement - ${cust.name}`,
             text: reminderWithPdfMsg
           });
-          sharedDirectly = true;
-        } catch (e) {
-          sharedDirectly = false;
+          return; // Successfully opened system share sheet
+        } catch (shareErr) {
+          if (shareErr.name === 'AbortError') return; // User cancelled
         }
       }
 
-      // Agar direct system sharing use nahi hui ya cancel hui, guaranteed manual trigger execute hoga:
-      if (!sharedDirectly) {
-        // Direct reliable Blob Download
-        const blobUrl = URL.createObjectURL(pdfBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = blobUrl;
-        downloadLink.download = fileName;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+      // 4. Guaranteed Fallback: Download Binary File & Open Pre-filled WhatsApp Chat
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
 
-        // WhatsApp Automatic Opening via Timeout so browser download isn't cancelled
-        if (cust.phone) {
-          const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
-          const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-          setTimeout(() => {
-            window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(reminderWithPdfMsg)}`, '_blank');
-          }, 450);
-        } else {
-          alert("Statement PDF डाउनलोड हो गया है। कस्टमर का फोन नंबर न होने के कारण व्हाट्सएप नहीं खोला जा सका।");
-        }
+      if (cust.phone) {
+        const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
+        const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+        setTimeout(() => {
+          window.open(`https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(reminderWithPdfMsg)}`, '_blank');
+        }, 500);
+      } else {
+        alert("Statement PDF डाउनलोड हो गया है। कस्टमर का फोन नंबर न होने के कारण व्हाट्सएप नहीं खोला जा सका।");
       }
     }
 
@@ -956,11 +966,11 @@
 
       if (!sendWA && !sendSMS) {
         const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(reminderMsg)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(reminderMsg)}`, '_blank');
       } else {
         if (sendWA) {
           const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(reminderMsg)}`, '_blank');
+          window.open(`https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(reminderMsg)}`, '_blank');
         }
         if (sendSMS) {
           window.open(`sms:${cleanPhone}?body=${encodeURIComponent(reminderMsg)}`, '_blank');
@@ -1430,7 +1440,7 @@
 
         if (sendWA) {
           const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(messageText)}`, '_blank');
+          window.open(`https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(messageText)}`, '_blank');
         }
         if (sendSMS) {
           window.open(`sms:${cleanPhone}?body=${encodeURIComponent(messageText)}`, '_blank');
