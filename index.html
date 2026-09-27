@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pandeys Pet World BahiKhata</title>
-  <!-- jsPDF & AutoTable for direct real PDF blob generation & native sharing -->
+  <!-- jsPDF & AutoTable for direct real PDF blob generation & clean table -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
@@ -406,11 +406,11 @@
     </div>
   </div>
 
-  <!-- Modal: PDF Range Filter & Export -->
+  <!-- Modal: PDF Range Filter & Direct WhatsApp Routing -->
   <div class="modal" id="pdfFilterModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Export Ledger Statement</h2>
+        <h2>Export & Send Statement</h2>
         <button class="close-btn" onclick="closeModal('pdfFilterModal')">&times;</button>
       </div>
       <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">Date range filter karein (Khali chhodne par poora hisaab aayega):</p>
@@ -422,7 +422,7 @@
         <label>To Date</label>
         <input type="date" id="pdfDateTo" class="form-control">
       </div>
-      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executeDirectPdfShare()">📄 Download & Share PDF on WhatsApp</button>
+      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executePdfAndWhatsAppReminder()">📄 Download & Send Statement via WhatsApp</button>
       <button class="btn-outline" onclick="closeModal('pdfFilterModal')">Radd Karein</button>
     </div>
   </div>
@@ -439,7 +439,7 @@
       </div>
 
       <div class="cust-manage-actions">
-        <button class="btn-sm-action btn-sm-pdf" onclick="openPdfFilterModal()">📄 PDF Export</button>
+        <button class="btn-sm-action btn-sm-pdf" onclick="openPdfFilterModal()">📄 PDF</button>
         <button class="btn-sm-action btn-sm-warning" onclick="sendRollingPaymentReminder()">🔔 Remind</button>
         <button class="btn-sm-action" onclick="promptProtectedCustAction('edit')">✏️ Edit</button>
         <button class="btn-sm-action btn-sm-danger" onclick="promptProtectedCustAction('delete')">🗑️ Delete</button>
@@ -632,7 +632,7 @@
     }
 
     /* ========================================================
-       DIRECT PDF GENERATION & NATIVE ATTACH SHARING
+       PDF EXPORT & DIRECT ROLLING REMINDER ROUTING
        ======================================================== */
     function openPdfFilterModal() {
       closeModal('ledgerModal');
@@ -641,7 +641,7 @@
       openModal('pdfFilterModal');
     }
 
-    async function executeDirectPdfShare() {
+    async function executePdfAndWhatsAppReminder() {
       const cust = appData.customers.find(c => c.id === currentCustomerId);
       if (!cust) return;
 
@@ -660,11 +660,10 @@
 
       closeModal('pdfFilterModal');
 
-      // Generate Binary PDF Document using jsPDF
+      // 1. Generate Clean Real PDF using jsPDF
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // Header Banner
       doc.setFillColor(5, 150, 105);
       doc.rect(0, 0, 210, 24, 'F');
       doc.setTextColor(255, 255, 255);
@@ -672,7 +671,6 @@
       doc.setFont("helvetica", "bold");
       doc.text("Pandey's Pet World Ledger Statement", 14, 15);
 
-      // Customer Meta Info
       doc.setTextColor(15, 23, 42);
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
@@ -685,7 +683,6 @@
       doc.text(`Date Generated: ${genDate}`, 130, 32);
       doc.text(`Period: ${period}`, 130, 38);
 
-      // Build Table Data
       let totalDebit = 0;
       let totalCredit = 0;
       const tableRows = [];
@@ -719,7 +716,6 @@
       const net = totalDebit - totalCredit;
       const balType = net > 0 ? 'Due (Lena Hai)' : net < 0 ? 'Advance Jama' : 'Hisaab Chutta';
 
-      // Summary Card in PDF
       doc.setFillColor(236, 253, 245);
       doc.setDrawColor(5, 150, 105);
       doc.roundedRect(14, finalY, 182, 20, 2, 2, 'FD');
@@ -733,42 +729,36 @@
       doc.setTextColor(5, 150, 105);
       doc.text(`Net Balance: Rs. ${Math.abs(net)} (${balType})`, 18, finalY + 14);
 
-      // Output as Blob
-      const pdfBlob = doc.output('blob');
+      // Save PDF to local device
       const fileName = `${cust.name.replace(/\s+/g, '_')}_Ledger_Statement.pdf`;
-      const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+      doc.save(fileName);
 
-      const balanceWord = net > 0 ? `₹${net} देय (Due)` : (net < 0 ? `₹${Math.abs(net)} एडवांस` : 'हिसाब चुकता');
-      const shareMessage = `राधे-राधे ${cust.name} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) की ओर से आपका खाता विवरण (Ledger Statement PDF) तैयार कर दिया गया है।\n\nवर्तमान शुद्ध शेष: ${balanceWord}।\n\nकृपया संलग्न PDF का अवलोकन कर लें। आपके निरंतर सहयोग और विश्वास हेतु हार्दिक आभार!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+      // 2. Prepare Pyara Rolling Reminder Message for Automatic WhatsApp Trigger
+      const oldestDebitTx = (cust.transactions || [])
+        .filter(t => t.type === 'GIVEN')
+        .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
 
-      // Try Direct WhatsApp/App Share with File Attachment via Web Share API
-      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-        try {
-          await navigator.share({
-            files: [pdfFile],
-            title: fileName,
-            text: shareMessage
-          });
-          return;
-        } catch (shareErr) {
-          // If user cancels or shares fails, fallback to download + wa chat
-        }
+      let daysText = "काफी समय";
+      if (oldestDebitTx && oldestDebitTx.date) {
+        const days = Math.floor((Date.now() - new Date(oldestDebitTx.date).getTime()) / (1000 * 60 * 60 * 24));
+        if (days > 0) daysText = `लगभग ${days} दिन`;
       }
 
-      // Fallback: Direct Download + Open WhatsApp Window
-      const blobUrl = URL.createObjectURL(pdfBlob);
-      const downloadLink = document.createElement('a');
-      downloadLink.href = blobUrl;
-      downloadLink.download = fileName;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      downloadLink.remove();
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+      const balanceText = net > 0 
+        ? `वर्तमान कुल शेष (बाकी) राशि: ₹${net}` 
+        : (net < 0 ? `वर्तमान एडवांस जमा राशि: ₹${Math.abs(net)}` : 'वर्तमान हिसाब-किताब: पूर्णतः चुकता');
 
+      const reminderWithPdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nआशा है आप एवं आपके सभी प्यारे पालतू साथी (Pets) सपरिवार सकुशल व आनंद में होंगे।\n\nपांडेयस पेट वर्ल्ड के प्रति आपका निरंतर विश्वास और स्नेह हमारे लिए अत्यंत आदरणीय है। एक छोटा सा विमर्श साझा करना था कि कोई भी व्यापार और आपसी संबंध केवल विश्वास और समय पर पूंजी की रोटेशन (Rolling) पर ही सुचारू रूप से चलता है।\n\nआपके खाते का विस्तृत लेजर स्टेटमेंट (Statement PDF) तैयार कर दिया गया है। ${daysText} से ${balanceText} देय आ रही है।\n\nयदि संभव हो तो सुविधानुसार इसे क्लियर या रोल करवा दें, जिससे व्यवस्था और स्टॉक की आपूर्ति बिना रुकावट बनी रहे।\n\nआपके अमूल्य सहयोग और स्नेह के लिए हम सदैव आभारी रहेंगे। आपका दिन शुभ और मंगलमय हो!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+
+      // Automatically launch WhatsApp with customer's number & reminder text
       if (cust.phone) {
         const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
         const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(shareMessage)}`, '_blank');
+        setTimeout(() => {
+          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(reminderWithPdfMsg)}`, '_blank');
+        }, 300);
+      } else {
+        alert("Statement PDF डाउनलोड हो गया है। कस्टमर का मोबाइल नंबर दर्ज न होने के कारण व्हाट्सएप स्वतः नहीं खुल सका।");
       }
     }
 
