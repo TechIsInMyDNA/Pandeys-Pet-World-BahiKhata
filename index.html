@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pandeys Pet World BahiKhata</title>
+  <!-- HTML2PDF CDN for Clean Client-side PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --primary: #059669;
@@ -17,6 +19,8 @@
       --danger-bg: #fef2f2;
       --success: #10b981;
       --success-bg: #f0fdf4;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
       --border: #e2e8f0;
       --radius: 14px;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -265,14 +269,29 @@
     .btn-secondary { width: 100%; background: #0284c7; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
     .btn-outline { width: 100%; background: white; border: 1px solid var(--border); padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-bottom: 6px; }
 
-    .tx-scrollbox { max-height: 140px; overflow-y: auto; margin-bottom: 14px; }
+    .tx-scrollbox { max-height: 160px; overflow-y: auto; margin-bottom: 14px; }
     .tx-row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid #f1f5f9;
       font-size: 0.85rem;
     }
+    .tx-actions {
+      display: flex;
+      gap: 4px;
+      margin-left: 8px;
+    }
+    .tx-btn-icon {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
     .section-divider {
       font-size: 0.78rem;
       font-weight: 800;
@@ -281,6 +300,42 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
+    .cust-manage-actions {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .btn-sm-action {
+      flex: 1;
+      padding: 7px 4px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-sm-danger { color: var(--danger); background: var(--danger-bg); border-color: #fecaca; }
+    .btn-sm-warning { color: #92400e; background: var(--warning-bg); border-color: #fde68a; }
+    .btn-sm-pdf { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
+
+    /* Hidden Container specifically formatted for PDF rendering */
+    #pdfRenderTemplate {
+      display: none;
+      background: white;
+      padding: 24px;
+      color: #0f172a;
+      font-family: var(--font);
+    }
+    .pdf-header { border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 16px; }
+    .pdf-header h1 { font-size: 20px; color: #059669; font-weight: 800; }
+    .pdf-header p { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .pdf-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 11px; }
+    .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
+    .pdf-table th { background: #f1f5f9; font-weight: 700; }
+    .pdf-summary-box { margin-top: 16px; border: 1px solid #059669; background: #ecfdf5; padding: 12px; border-radius: 6px; text-align: right; }
   </style>
 </head>
 <body>
@@ -336,6 +391,77 @@
     </div>
   </div>
 
+  <!-- Modal: Edit Customer (PIN Protected) -->
+  <div class="modal" id="editCustomerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Customer Vivran Sudharein</h2>
+        <button class="close-btn" onclick="closeModal('editCustomerModal')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>Customer Name *</label>
+        <input type="text" id="editCustName" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input type="tel" id="editCustPhone" class="form-control">
+      </div>
+      <button class="btn-full" onclick="applyCustomerEdit()">Update Karein</button>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Single Transaction (PIN Protected) -->
+  <div class="modal" id="editTxModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Transaction Sudharein</h2>
+        <button class="close-btn" onclick="closeModal('editTxModal')">&times;</button>
+      </div>
+      <input type="hidden" id="editTxId">
+      <div class="form-group">
+        <label>Amount (₹) *</label>
+        <input type="number" id="editTxAmount" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="editTxType" class="form-control">
+          <option value="GIVEN">Udhar Diya (Debit)</option>
+          <option value="GOT">Jama Kiya (Credit)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="editTxDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Item / Note</label>
+        <input type="text" id="editTxNote" class="form-control">
+      </div>
+      <button class="btn-full" onclick="applyTxEdit()">Update Transaction</button>
+    </div>
+  </div>
+
+  <!-- Modal: PDF Range Filter & Export -->
+  <div class="modal" id="pdfFilterModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Export Ledger PDF</h2>
+        <button class="close-btn" onclick="closeModal('pdfFilterModal')">&times;</button>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Tarikh filter chunein (Khali chhodne par poora hisaab-kitab aayega):</p>
+      <div class="form-group">
+        <label>From Date (Is Din Se)</label>
+        <input type="date" id="pdfDateFrom" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>To Date (Is Din Tak)</label>
+        <input type="date" id="pdfDateTo" class="form-control">
+      </div>
+      <button class="btn-full" style="background:#0284c7; margin-bottom:8px;" onclick="generateCustomerPdf()">📄 Download PDF & Share on WhatsApp</button>
+      <button class="btn-outline" onclick="closeModal('pdfFilterModal')">Radd Karein</button>
+    </div>
+  </div>
+
   <!-- Modal: Ledger Entry -->
   <div class="modal" id="ledgerModal">
     <div class="modal-content">
@@ -345,6 +471,14 @@
           <p id="ledgerCustPhone" style="font-size:0.8rem; color:var(--text-muted);"></p>
         </div>
         <button class="close-btn" onclick="closeModal('ledgerModal')">&times;</button>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="cust-manage-actions">
+        <button class="btn-sm-action btn-sm-pdf" onclick="openPdfFilterModal()">📄 PDF</button>
+        <button class="btn-sm-action btn-sm-warning" onclick="sendRollingPaymentReminder()">🔔 Remind</button>
+        <button class="btn-sm-action" onclick="promptProtectedCustAction('edit')">✏️ Edit</button>
+        <button class="btn-sm-action btn-sm-danger" onclick="promptProtectedCustAction('delete')">🗑️ Delete</button>
       </div>
 
       <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:12px; margin-bottom:12px; text-align:center;">
@@ -390,11 +524,11 @@
       <div class="message-options">
         <label class="chk-label">
           <input type="checkbox" id="chkWhatsApp" onchange="persistMessagePreferences()">
-          <span>WhatsApp Message</span>
+          <span>WhatsApp Vivran</span>
         </label>
         <label class="chk-label">
           <input type="checkbox" id="chkTextSMS" onchange="persistMessagePreferences()">
-          <span>Text SMS</span>
+          <span>Text SMS Vivran</span>
         </label>
       </div>
 
@@ -465,6 +599,46 @@
     </div>
   </div>
 
+  <!-- PDF Render HTML Container -->
+  <div id="pdfRenderTemplate">
+    <div class="pdf-header">
+      <h1>Pandey's Pet World Ledger Statement</h1>
+      <p>Official Customer Statement & Account Summary</p>
+      <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11px;">
+        <div>
+          <strong>Customer:</strong> <span id="pdfCustName"></span><br>
+          <strong>Mobile:</strong> <span id="pdfCustPhone"></span>
+        </div>
+        <div style="text-align:right;">
+          <strong>Date Generated:</strong> <span id="pdfGenDate"></span><br>
+          <strong>Period:</strong> <span id="pdfPeriod"></span>
+        </div>
+      </div>
+    </div>
+
+    <table class="pdf-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description / Note</th>
+          <th style="text-align:right;">Debit (Udhar)</th>
+          <th style="text-align:right;">Credit (Jama)</th>
+        </tr>
+      </thead>
+      <tbody id="pdfTableBody"></tbody>
+    </table>
+
+    <div class="pdf-summary-box">
+      <div style="font-size:12px; margin-bottom:4px;"><strong>Total Debit:</strong> ₹<span id="pdfTotalDebit">0</span> | <strong>Total Credit:</strong> ₹<span id="pdfTotalCredit">0</span></div>
+      <div style="font-size:14px; font-weight:800; color:#059669;"><strong>Net Balance:</strong> ₹<span id="pdfFinalBalance">0</span> (<span id="pdfBalanceType">Chutta</span>)</div>
+    </div>
+
+    <p style="text-align:center; font-size:10px; color:#64748b; margin-top:24px;">
+      राधे-राधे! हमारे साथ आपके विश्वास और व्यापारिक सहयोग हेतु हार्दिक आभार।<br>
+      <strong>Pandey's Pet World</strong>
+    </p>
+  </div>
+
   <script>
     let appData = { customers: [], lastUpdated: 0 };
     let currentCustomerId = null;
@@ -473,6 +647,14 @@
     let calcExpression = "0";
 
     const DB_FILE = "bahikhata_data.enc";
+    
+    // Obfuscated PIN validation bina screen par PIN darshaye
+    function checkSecretPin(val) {
+      if (!val) return false;
+      const arr = [50, 53, 56, 48];
+      const target = String.fromCharCode(...arr);
+      return String(val).trim() === target;
+    }
 
     window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('txDate').valueAsDate = new Date();
@@ -523,6 +705,274 @@
     function persistMessagePreferences() {
       localStorage.setItem('pref_msg_wa', document.getElementById('chkWhatsApp').checked);
       localStorage.setItem('pref_msg_sms', document.getElementById('chkTextSMS').checked);
+    }
+
+    /* ========================================================
+       PDF EXPORT & DIRECT WHATSAPP INTEGRATION
+       ======================================================== */
+    function openPdfFilterModal() {
+      document.getElementById('pdfDateFrom').value = '';
+      document.getElementById('pdfDateTo').value = '';
+      openModal('pdfFilterModal');
+    }
+
+    async function generateCustomerPdf() {
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+
+      const fromDate = document.getElementById('pdfDateFrom').value;
+      const toDate = document.getElementById('pdfDateTo').value;
+
+      let txs = (cust.transactions || []).slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      if (fromDate) {
+        txs = txs.filter(t => t.date >= fromDate);
+      }
+      if (toDate) {
+        txs = txs.filter(t => t.date <= toDate);
+      }
+
+      if (txs.length === 0) {
+        alert("Chuni gayi date range me koi transactions nahi hain.");
+        return;
+      }
+
+      // Populate Template
+      document.getElementById('pdfCustName').innerText = cust.name;
+      document.getElementById('pdfCustPhone').innerText = cust.phone || 'N/A';
+      document.getElementById('pdfGenDate').innerText = new Date().toLocaleDateString('hi-IN');
+      document.getElementById('pdfPeriod').innerText = (fromDate || toDate) ? `${fromDate || 'Beginning'} se ${toDate || 'Today'}` : 'Complete History';
+
+      let totalDebit = 0;
+      let totalCredit = 0;
+      const tbody = document.getElementById('pdfTableBody');
+      tbody.innerHTML = '';
+
+      txs.forEach(t => {
+        const isGiven = (t.type === 'GIVEN');
+        if (isGiven) totalDebit += t.amount;
+        else totalCredit += t.amount;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${t.date}</td>
+          <td>${escapeHtml(t.note || (isGiven ? 'Udhar Diya' : 'Prapt Hua'))}</td>
+          <td style="text-align:right; color:#dc2626;">${isGiven ? '₹' + t.amount : '-'}</td>
+          <td style="text-align:right; color:#16a34a;">${!isGiven ? '₹' + t.amount : '-'}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      const net = totalDebit - totalCredit;
+      document.getElementById('pdfTotalDebit').innerText = totalDebit;
+      document.getElementById('pdfTotalCredit').innerText = totalCredit;
+      document.getElementById('pdfFinalBalance').innerText = Math.abs(net);
+      document.getElementById('pdfBalanceType').innerText = net > 0 ? 'Due / Lena Hai' : net < 0 ? 'Advance Jama' : 'Nill (Chutta)';
+
+      const element = document.getElementById('pdfRenderTemplate');
+      element.style.display = 'block';
+
+      const opt = {
+        margin: 10,
+        filename: `${cust.name.replace(/\s+/g, '_')}_Ledger_Statement.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      try {
+        await html2pdf().set(opt).from(element).save();
+      } finally {
+        element.style.display = 'none';
+      }
+
+      closeModal('pdfFilterModal');
+
+      // WhatsApp trigger with respectful note
+      if (cust.phone) {
+        const balanceWord = net > 0 ? `₹${net} देय (Due)` : (net < 0 ? `₹${Math.abs(net)} एडवांस` : 'हिसाब चुकता');
+        const pdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) की ओर से आपका विस्तृत खाता विवरण (Ledger Statement PDF) तैयार कर दिया गया है।\n\nवर्तमान शुद्ध शेष: ${balanceWord}।\n\nकृपया डाउनलोड की गई PDF फाइल का अवलोकन कर लें। आपके निरंतर सहयोग और स्नेह हेतु हम सदैव आभारी हैं!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+        const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
+        const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(pdfMsg)}`, '_blank');
+      }
+    }
+
+    /* ========================================================
+       PROTECTED ACTIONS (CUSTOMER & TRANSACTION)
+       ======================================================== */
+    function promptProtectedCustAction(action) {
+      const enteredPin = prompt("Suraksha PIN darj karein:");
+      if (!enteredPin) return;
+
+      if (!checkSecretPin(enteredPin)) {
+        alert("Galat PIN!");
+        return;
+      }
+
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+
+      if (action === 'edit') {
+        document.getElementById('editCustName').value = cust.name;
+        document.getElementById('editCustPhone').value = cust.phone || '';
+        openModal('editCustomerModal');
+      } else if (action === 'delete') {
+        if (confirm(`Kya aap sach me "${cust.name}" ko delete karna chahte hain?`)) {
+          appData.customers = appData.customers.filter(c => c.id !== currentCustomerId);
+          saveLocalData();
+          renderCustomerList();
+          closeModal('ledgerModal');
+          syncData();
+          alert("Customer safaltapoorvak delete ho gaya.");
+        }
+      }
+    }
+
+    function applyCustomerEdit() {
+      const updatedName = document.getElementById('editCustName').value.trim();
+      const updatedPhone = document.getElementById('editCustPhone').value.trim();
+
+      if (!updatedName) {
+        alert("Customer naam anivarya hai.");
+        return;
+      }
+
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+
+      cust.name = updatedName;
+      cust.phone = updatedPhone;
+
+      saveLocalData();
+      renderCustomerList();
+      closeModal('editCustomerModal');
+
+      document.getElementById('ledgerCustName').innerText = cust.name;
+      document.getElementById('ledgerCustPhone').innerText = cust.phone ? `📱 ${cust.phone}` : 'No phone registered';
+
+      syncData();
+    }
+
+    function promptEditTx(txId) {
+      const enteredPin = prompt("Transaction edit karne ke liye PIN darj karein:");
+      if (!enteredPin) return;
+
+      if (!checkSecretPin(enteredPin)) {
+        alert("Galat PIN!");
+        return;
+      }
+
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+      const tx = (cust.transactions || []).find(t => t.id === txId);
+      if (!tx) return;
+
+      document.getElementById('editTxId').value = tx.id;
+      document.getElementById('editTxAmount').value = tx.amount;
+      document.getElementById('editTxType').value = tx.type;
+      document.getElementById('editTxDate').value = tx.date;
+      document.getElementById('editTxNote').value = tx.note || '';
+
+      openModal('editTxModal');
+    }
+
+    function applyTxEdit() {
+      const txId = document.getElementById('editTxId').value;
+      const amount = parseFloat(document.getElementById('editTxAmount').value);
+      const type = document.getElementById('editTxType').value;
+      const date = document.getElementById('editTxDate').value;
+      const note = document.getElementById('editTxNote').value.trim();
+
+      if (isNaN(amount) || amount <= 0) {
+        alert("Kripya sahi amount bharein.");
+        return;
+      }
+
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+      const tx = (cust.transactions || []).find(t => t.id === txId);
+      if (!tx) return;
+
+      tx.amount = amount;
+      tx.type = type;
+      tx.date = date;
+      tx.note = note;
+
+      saveLocalData();
+      renderCustomerList();
+      closeModal('editTxModal');
+      openLedger(currentCustomerId);
+      syncData();
+    }
+
+    function promptDeleteTx(txId) {
+      const enteredPin = prompt("Transaction delete karne ke liye PIN darj karein:");
+      if (!enteredPin) return;
+
+      if (!checkSecretPin(enteredPin)) {
+        alert("Galat PIN!");
+        return;
+      }
+
+      if (confirm("Kya aap sach me is transaction entry ko delete karna chahte hain?")) {
+        const cust = appData.customers.find(c => c.id === currentCustomerId);
+        if (!cust) return;
+
+        cust.transactions = (cust.transactions || []).filter(t => t.id !== txId);
+        saveLocalData();
+        renderCustomerList();
+        openLedger(currentCustomerId);
+        syncData();
+      }
+    }
+
+    /* ========================================================
+       PYAARA NON-HURTING PAYMENT REMINDER SCRIPT
+       ======================================================== */
+    function sendRollingPaymentReminder() {
+      const cust = appData.customers.find(c => c.id === currentCustomerId);
+      if (!cust) return;
+
+      const net = getCustomerNetBalance(cust);
+      if (net <= 0) {
+        alert("Inka koi bhi baki (due) balance nahi hai.");
+        return;
+      }
+
+      if (!cust.phone) {
+        alert("Is customer ka mobile number darj nahi hai.");
+        return;
+      }
+
+      const oldestDebitTx = (cust.transactions || [])
+        .filter(t => t.type === 'GIVEN')
+        .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+      let daysText = "काफी समय";
+      if (oldestDebitTx && oldestDebitTx.date) {
+        const days = Math.floor((Date.now() - new Date(oldestDebitTx.date).getTime()) / (1000 * 60 * 60 * 24));
+        if (days > 0) daysText = `लगभग ${days} दिन`;
+      }
+
+      const reminderMsg = `राधे-राधे ${cust.name} जी 🙏\n\nआशा है आप एवं आपके सभी प्यारे पालतू साथी (Pets) सपरिवार सकुशल व आनंद में होंगे।\n\nपांडेयस पेट वर्ल्ड के प्रति आपका निरंतर विश्वास और स्नेह हमारे लिए अत्यंत आदरणीय है। एक छोटा सा विमर्श साझा करना था कि कोई भी व्यापार और आपसी संबंध केवल विश्वास और समय पर पूंजी की रोटेशन (Rolling) पर ही सुचारू रूप से चलता है।\n\nआपके खाते में ${daysText} से कुल ₹${net} की शेष राशि देय आ रही है। यदि संभव हो तो सुविधानुसार इसे क्लियर या रोल करवा दें, जिससे व्यवस्था और स्टॉक की आपूर्ति बिना रुकावट बनी रहे।\n\nआपके अमूल्य सहयोग और स्नेह के लिए हम सदैव आभारी रहेंगे। आपका दिन शुभ और मंगलमय हो!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+
+      const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
+      const sendWA = document.getElementById('chkWhatsApp').checked;
+      const sendSMS = document.getElementById('chkTextSMS').checked;
+
+      if (!sendWA && !sendSMS) {
+        const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(reminderMsg)}`, '_blank');
+      } else {
+        if (sendWA) {
+          const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(reminderMsg)}`, '_blank');
+        }
+        if (sendSMS) {
+          window.open(`sms:${cleanPhone}?body=${encodeURIComponent(reminderMsg)}`, '_blank');
+        }
+      }
     }
 
     /* ==========================================
@@ -694,10 +1144,10 @@
             alert('Backup successfully restore ho gaya!');
             closeModal('configModal');
           } else {
-            alert('Invalid backup file structure.');
+            alert('Invalid backup structure.');
           }
         } catch (err) {
-          alert('JSON file read karne me error aayi.');
+          alert('JSON read error.');
         }
       };
       reader.readAsText(file);
@@ -709,7 +1159,7 @@
         return;
       }
 
-      let csv = "\uFEFF"; // UTF-8 BOM for Excel Hindi support
+      let csv = "\uFEFF";
       csv += "Customer Name,Mobile,Status,Net Balance,Date,Transaction Type,Amount (INR),Note\n";
 
       appData.customers.forEach(c => {
@@ -746,8 +1196,7 @@
         const text = e.target.result;
         try {
           if (file.name.endsWith('.json')) {
-            const json = JSON.parse(text);
-            parseOkCreditJson(json);
+            parseOkCreditJson(JSON.parse(text));
           } else {
             parseOkCreditCsv(text);
           }
@@ -757,8 +1206,7 @@
           alert('OkCredit data successfully import & sync ho gaya!');
           closeModal('configModal');
         } catch (err) {
-          console.error(err);
-          alert('OkCredit file parse karne me samasya aayi. Format check karein.');
+          alert('OkCredit file parse error.');
         }
       };
       reader.readAsText(file);
@@ -936,12 +1384,16 @@
         const row = document.createElement('div');
         row.className = 'tx-row';
         row.innerHTML = `
-          <div>
+          <div style="flex:1;">
             <strong>${escapeHtml(tx.note || (tx.type === 'GIVEN' ? 'Udhar Diya' : 'Jama Hua'))}</strong>
             <div style="font-size:0.75rem; color:var(--text-muted);">${tx.date}</div>
           </div>
-          <div style="font-weight:700;" class="${tx.type === 'GIVEN' ? 'text-danger' : 'text-success'}">
+          <div style="font-weight:700; margin-right:8px;" class="${tx.type === 'GIVEN' ? 'text-danger' : 'text-success'}">
             ${tx.type === 'GIVEN' ? '-' : '+'} ₹${tx.amount}
+          </div>
+          <div class="tx-actions">
+            <button class="tx-btn-icon" onclick="promptEditTx('${tx.id}')">✏️</button>
+            <button class="tx-btn-icon" style="color:var(--danger);" onclick="promptDeleteTx('${tx.id}')">🗑️</button>
           </div>
         `;
         txBox.appendChild(row);
@@ -999,17 +1451,25 @@
     }
 
     function composeMessage(custName, type, amount, currentBalance, note) {
-      const actionText = type === 'GIVEN'
-        ? `ke roop me ₹${amount} ka hisaab joda gaya hai`
-        : `ke roop me ₹${amount} prapt hue, dhanyawad`;
+      let actionText = "";
+      if (type === 'GIVEN') {
+        actionText = `आपके खाते में ₹${amount} उधारी के रूप में जोड़े गए हैं`;
+      } else {
+        actionText = `हमें आपसे ₹${amount} का भुगतान सप्रेम प्राप्त हुआ है, बहुत-बहुत धन्यवाद`;
+      }
 
-      const balanceText = currentBalance > 0 
-        ? `Kul baki rashi (Due): ₹${currentBalance}`
-        : `Hisaab barabar/Advance: ₹${Math.abs(currentBalance)}`;
+      let balanceText = "";
+      if (currentBalance > 0) {
+        balanceText = `वर्तमान कुल शेष (बाकी) राशि: ₹${currentBalance}`;
+      } else if (currentBalance < 0) {
+        balanceText = `वर्तमान एडवांस जमा राशि: ₹${Math.abs(currentBalance)}`;
+      } else {
+        balanceText = `आपका कुल हिसाब-किताब पूर्णतः चुकता हो चुका है`;
+      }
 
-      const noteDetails = note ? ` (${note})` : '';
+      const noteDetails = note ? `\nविवरण (Note): ${note}` : '';
 
-      return `Namaste ${custName} ji,\n\nPandey's Pet World ke sath vyavahar hetu aabhar.\nAapke khate me ${actionText}${noteDetails}.\n${balanceText}.\n\n- Pandey's Pet World`;
+      return `राधे-राधे ${custName} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) के साथ आपका व्यवहार एवं विश्वास हमारे लिए अत्यंत अमूल्य है।\n\n${actionText}।${noteDetails}\n${balanceText}।\n\nअपने पालतू साथियों (Pets) की किसी भी सेवा या आवश्यकता हेतु सदैव संपर्क करें। आपका दिन मंगलमय हो!\n\nसस्नेह,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
     }
 
     /* ==========================================
