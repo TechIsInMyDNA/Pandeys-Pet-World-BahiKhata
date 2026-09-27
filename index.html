@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pandeys Pet World BahiKhata</title>
+  <!-- jsPDF & AutoTable for direct real PDF blob generation & native sharing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
     :root {
       --primary: #059669;
@@ -132,7 +135,6 @@
       cursor: pointer;
     }
 
-    /* Modal Sheet Styling */
     .modal {
       display: none;
       position: fixed;
@@ -156,7 +158,6 @@
     }
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-    /* Compact Screen Fit for Ledger Sheet */
     .modal-content.ledger-fit {
       display: flex;
       flex-direction: column;
@@ -188,7 +189,6 @@
     }
     .form-control:focus { background: #ffffff; border-color: var(--primary); }
 
-    /* Compact Integrated Calculator */
     .calc-container {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -301,19 +301,6 @@
     .btn-sm-danger { color: var(--danger); background: var(--danger-bg); border-color: #fecaca; }
     .btn-sm-warning { color: #92400e; background: var(--warning-bg); border-color: #fde68a; }
     .btn-sm-pdf { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
-
-    /* Printable Clean Ledger View (Print/PDF) */
-    @media print {
-      body * { visibility: hidden; }
-      #printableStatementArea, #printableStatementArea * { visibility: visible; }
-      #printableStatementArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; }
-    }
-    #printableStatementArea { display: none; background: white; color: #0f172a; padding: 18px; }
-    .print-header { border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px; }
-    .print-header h1 { font-size: 18px; color: #059669; }
-    .print-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-    .print-table th, .print-table td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
-    .print-table th { background: #f8fafc; }
   </style>
 </head>
 <body>
@@ -435,7 +422,7 @@
         <label>To Date</label>
         <input type="date" id="pdfDateTo" class="form-control">
       </div>
-      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executePdfStatementPrint()">📄 Download / Print PDF Statement</button>
+      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executeDirectPdfShare()">📄 Download & Share PDF on WhatsApp</button>
       <button class="btn-outline" onclick="closeModal('pdfFilterModal')">Radd Karein</button>
     </div>
   </div>
@@ -451,7 +438,6 @@
         <button class="close-btn" onclick="closeModal('ledgerModal')">&times;</button>
       </div>
 
-      <!-- Action Chips -->
       <div class="cust-manage-actions">
         <button class="btn-sm-action btn-sm-pdf" onclick="openPdfFilterModal()">📄 PDF Export</button>
         <button class="btn-sm-action btn-sm-warning" onclick="sendRollingPaymentReminder()">🔔 Remind</button>
@@ -459,14 +445,12 @@
         <button class="btn-sm-action btn-sm-danger" onclick="promptProtectedCustAction('delete')">🗑️ Delete</button>
       </div>
 
-      <!-- Balance Card -->
       <div style="background:#f8fafc; border:1px solid var(--border); padding:8px 10px; border-radius:10px; margin-bottom:8px; text-align:center;">
         <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">NET BALANCE</span>
         <h3 id="ledgerNetBalance" style="font-size:1.25rem; font-weight:800; margin:1px 0;">₹0</h3>
         <span id="ledgerBehaviorBadge" class="badge"></span>
       </div>
 
-      <!-- Internal Scrollable Area for Calculator and History -->
       <div class="scrollable-body">
         <div class="tx-scrollbox" id="ledgerTxList"></div>
 
@@ -581,46 +565,6 @@
     </div>
   </div>
 
-  <!-- Printable Container for PDF Generation -->
-  <div id="printableStatementArea">
-    <div class="print-header">
-      <h1>Pandey's Pet World Ledger Statement</h1>
-      <p style="font-size:11px; color:#64748b;">Complete Statement of Account & Transaction History</p>
-      <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:11px;">
-        <div>
-          <strong>Customer:</strong> <span id="printCustName"></span><br>
-          <strong>Mobile:</strong> <span id="printCustPhone"></span>
-        </div>
-        <div style="text-align:right;">
-          <strong>Generated Date:</strong> <span id="printGenDate"></span><br>
-          <strong>Filter Period:</strong> <span id="printPeriod"></span>
-        </div>
-      </div>
-    </div>
-
-    <table class="print-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Particulars / Note</th>
-          <th style="text-align:right;">Debit (Udhar)</th>
-          <th style="text-align:right;">Credit (Jama)</th>
-        </tr>
-      </thead>
-      <tbody id="printTableBody"></tbody>
-    </table>
-
-    <div style="margin-top:14px; border:1px solid #059669; background:#ecfdf5; padding:10px; border-radius:6px; text-align:right;">
-      <div style="font-size:11px; margin-bottom:3px;"><strong>Total Debit:</strong> ₹<span id="printTotalDebit">0</span> | <strong>Total Credit:</strong> ₹<span id="printTotalCredit">0</span></div>
-      <div style="font-size:13px; font-weight:800; color:#059669;"><strong>Net Balance:</strong> ₹<span id="printFinalBalance">0</span> (<span id="printBalanceType">Chutta</span>)</div>
-    </div>
-
-    <p style="text-align:center; font-size:10px; color:#64748b; margin-top:20px;">
-      राधे-राधे! हमारे साथ आपके विश्वास और व्यापारिक सहयोग हेतु हार्दिक आभार।<br>
-      <strong>Pandey's Pet World</strong>
-    </p>
-  </div>
-
   <script>
     let appData = { customers: [], lastUpdated: 0 };
     let currentCustomerId = null;
@@ -688,17 +632,16 @@
     }
 
     /* ========================================================
-       CLEAN PDF EXPORT (NO OVERLAP + 100% RELIABLE)
+       DIRECT PDF GENERATION & NATIVE ATTACH SHARING
        ======================================================== */
     function openPdfFilterModal() {
-      // Background sheet close ho jayegi taaki overlap na ho
       closeModal('ledgerModal');
       document.getElementById('pdfDateFrom').value = '';
       document.getElementById('pdfDateTo').value = '';
       openModal('pdfFilterModal');
     }
 
-    function executePdfStatementPrint() {
+    async function executeDirectPdfShare() {
       const cust = appData.customers.find(c => c.id === currentCustomerId);
       if (!cust) return;
 
@@ -715,51 +658,117 @@
         return;
       }
 
-      document.getElementById('printCustName').innerText = cust.name;
-      document.getElementById('printCustPhone').innerText = cust.phone || 'N/A';
-      document.getElementById('printGenDate').innerText = new Date().toLocaleDateString('hi-IN');
-      document.getElementById('printPeriod').innerText = (fromDate || toDate) ? `${fromDate || 'Beginning'} se ${toDate || 'Today'}` : 'Complete History';
+      closeModal('pdfFilterModal');
 
+      // Generate Binary PDF Document using jsPDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header Banner
+      doc.setFillColor(5, 150, 105);
+      doc.rect(0, 0, 210, 24, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Pandey's Pet World Ledger Statement", 14, 15);
+
+      // Customer Meta Info
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Customer: ${cust.name}`, 14, 32);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Mobile: ${cust.phone || 'N/A'}`, 14, 38);
+
+      const genDate = new Date().toLocaleDateString('hi-IN');
+      const period = (fromDate || toDate) ? `${fromDate || 'Beginning'} to ${toDate || 'Today'}` : 'Complete History';
+      doc.text(`Date Generated: ${genDate}`, 130, 32);
+      doc.text(`Period: ${period}`, 130, 38);
+
+      // Build Table Data
       let totalDebit = 0;
       let totalCredit = 0;
-      const tbody = document.getElementById('printTableBody');
-      tbody.innerHTML = '';
+      const tableRows = [];
 
       txs.forEach(t => {
         const isGiven = (t.type === 'GIVEN');
         if (isGiven) totalDebit += t.amount;
         else totalCredit += t.amount;
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${t.date}</td>
-          <td>${escapeHtml(t.note || (isGiven ? 'Udhar Diya' : 'Prapt Hua'))}</td>
-          <td style="text-align:right; color:#dc2626;">${isGiven ? '₹' + t.amount : '-'}</td>
-          <td style="text-align:right; color:#16a34a;">${!isGiven ? '₹' + t.amount : '-'}</td>
-        `;
-        tbody.appendChild(row);
+        tableRows.push([
+          t.date,
+          t.note || (isGiven ? 'Udhar Diya' : 'Jama Hua'),
+          isGiven ? 'Rs. ' + t.amount : '-',
+          !isGiven ? 'Rs. ' + t.amount : '-'
+        ]);
       });
 
+      doc.autoTable({
+        startY: 44,
+        head: [['Date', 'Particulars / Note', 'Debit (Udhar)', 'Credit (Jama)']],
+        body: tableRows,
+        headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 9, cellPadding: 3 },
+        columnStyles: {
+          2: { halign: 'right', textColor: [220, 38, 38] },
+          3: { halign: 'right', textColor: [22, 163, 74] }
+        }
+      });
+
+      const finalY = doc.lastAutoTable.finalY + 8;
       const net = totalDebit - totalCredit;
-      document.getElementById('printTotalDebit').innerText = totalDebit;
-      document.getElementById('printTotalCredit').innerText = totalCredit;
-      document.getElementById('printFinalBalance').innerText = Math.abs(net);
-      document.getElementById('printBalanceType').innerText = net > 0 ? 'Due / Lena Hai' : net < 0 ? 'Advance Jama' : 'Nill (Chutta)';
+      const balType = net > 0 ? 'Due (Lena Hai)' : net < 0 ? 'Advance Jama' : 'Hisaab Chutta';
 
-      closeModal('pdfFilterModal');
+      // Summary Card in PDF
+      doc.setFillColor(236, 253, 245);
+      doc.setDrawColor(5, 150, 105);
+      doc.roundedRect(14, finalY, 182, 20, 2, 2, 'FD');
+      
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(9);
+      doc.text(`Total Debit: Rs. ${totalDebit}    |    Total Credit: Rs. ${totalCredit}`, 18, finalY + 7);
 
-      // Native PDF engine trigger: opens clean Save as PDF layout
-      setTimeout(() => {
-        window.print();
-      }, 200);
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(5, 150, 105);
+      doc.text(`Net Balance: Rs. ${Math.abs(net)} (${balType})`, 18, finalY + 14);
 
-      // WhatsApp Message trigger
+      // Output as Blob
+      const pdfBlob = doc.output('blob');
+      const fileName = `${cust.name.replace(/\s+/g, '_')}_Ledger_Statement.pdf`;
+      const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+      const balanceWord = net > 0 ? `₹${net} देय (Due)` : (net < 0 ? `₹${Math.abs(net)} एडवांस` : 'हिसाब चुकता');
+      const shareMessage = `राधे-राधे ${cust.name} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) की ओर से आपका खाता विवरण (Ledger Statement PDF) तैयार कर दिया गया है।\n\nवर्तमान शुद्ध शेष: ${balanceWord}।\n\nकृपया संलग्न PDF का अवलोकन कर लें। आपके निरंतर सहयोग और विश्वास हेतु हार्दिक आभार!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+
+      // Try Direct WhatsApp/App Share with File Attachment via Web Share API
+      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: fileName,
+            text: shareMessage
+          });
+          return;
+        } catch (shareErr) {
+          // If user cancels or shares fails, fallback to download + wa chat
+        }
+      }
+
+      // Fallback: Direct Download + Open WhatsApp Window
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
       if (cust.phone) {
-        const balanceWord = net > 0 ? `₹${net} देय (Due)` : (net < 0 ? `₹${Math.abs(net)} एडवांस` : 'हिसाब चुकता');
-        const pdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) की ओर से आपका विस्तृत खाता विवरण (Ledger Statement PDF) तैयार कर दिया गया है।\n\nवर्तमान शुद्ध शेष: ${balanceWord}।\n\nकृपया स्टेटमेंट का अवलोकन कर लें। आपके निरंतर सहयोग और स्नेह हेतु हम सदैव आभारी हैं!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
         const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
         const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(pdfMsg)}`, '_blank');
+        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(shareMessage)}`, '_blank');
       }
     }
 
