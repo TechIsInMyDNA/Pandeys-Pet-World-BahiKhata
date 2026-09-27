@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pandeys Pet World BahiKhata</title>
-  <!-- HTML2PDF CDN for Clean Client-side PDF Generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --primary: #059669;
@@ -22,16 +20,16 @@
       --warning: #f59e0b;
       --warning-bg: #fffbeb;
       --border: #e2e8f0;
-      --radius: 14px;
+      --radius: 12px;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 95px; user-select: none; }
+    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 85px; user-select: none; }
 
     .app-header {
       background: #ffffff;
-      padding: 14px 18px;
+      padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -40,16 +38,16 @@
       z-index: 40;
       border-bottom: 1px solid var(--border);
     }
-    .brand-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
-    .sync-status { font-size: 0.72rem; display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+    .brand-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+    .sync-status { font-size: 0.72rem; display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-weight: 500; margin-top: 1px; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #eab308; }
     .dot.synced { background: var(--success); }
     .dot.offline { background: var(--danger); }
     .settings-btn {
       background: #f1f5f9;
       border: none;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -61,36 +59,36 @@
     .summary-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 14px 16px;
+      gap: 10px;
+      padding: 12px 16px;
     }
     .stat-card {
       background: var(--card-bg);
-      padding: 14px;
+      padding: 12px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
     }
-    .stat-card h3 { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-    .stat-card p { font-size: 1.35rem; font-weight: 800; margin-top: 4px; }
+    .stat-card h3 { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .stat-card p { font-size: 1.25rem; font-weight: 800; margin-top: 3px; }
     .text-danger { color: var(--danger); }
     .text-success { color: var(--success); }
 
-    .search-box { padding: 0 16px 12px; }
+    .search-box { padding: 0 16px 10px; }
     .search-input {
       width: 100%;
-      padding: 12px 16px;
-      border-radius: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
       border: 1px solid var(--border);
       outline: none;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       background: white;
     }
     .search-input:focus { border-color: var(--primary); }
 
-    .customer-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+    .customer-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
     .customer-card {
       background: var(--card-bg);
-      padding: 15px;
+      padding: 12px 14px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       display: flex;
@@ -100,59 +98,47 @@
       position: relative;
       overflow: hidden;
     }
-    .customer-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-    }
+    .customer-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
     .customer-card.vyavaharik::before { background: var(--success); }
     .customer-card.defaulter::before { background: var(--danger); }
 
-    .cust-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
-    .cust-info p { font-size: 0.8rem; color: var(--text-muted); }
+    .cust-info h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+    .cust-info p { font-size: 0.78rem; color: var(--text-muted); }
     .badge {
       display: inline-block;
       font-size: 0.65rem;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-top: 6px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
     }
     .badge-vyavaharik { background: var(--success-bg); color: #047857; }
     .badge-defaulter { background: var(--danger-bg); color: #b91c1c; }
     .cust-balance { text-align: right; }
-    .cust-balance span { font-size: 1.15rem; font-weight: 800; display: block; }
-    .cust-balance small { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
+    .cust-balance span { font-size: 1.1rem; font-weight: 800; display: block; }
+    .cust-balance small { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
 
-    .fab-container {
-      position: fixed;
-      bottom: 20px;
-      left: 16px;
-      right: 16px;
-      z-index: 30;
-    }
+    .fab-container { position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 30; }
     .fab {
       width: 100%;
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 1rem;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.95rem;
       font-weight: 700;
-      box-shadow: 0 8px 20px rgba(5,150,105,0.25);
+      box-shadow: 0 4px 14px rgba(5,150,105,0.25);
       cursor: pointer;
     }
 
+    /* Modal Sheet Styling */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(3px);
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(2px);
       z-index: 100;
       justify-content: center;
       align-items: flex-end;
@@ -162,74 +148,91 @@
       background: white;
       width: 100%;
       max-width: 480px;
-      border-radius: 24px 24px 0 0;
-      padding: 22px 20px;
-      max-height: 92vh;
+      border-radius: 20px 20px 0 0;
+      padding: 16px;
+      max-height: 94vh;
       overflow-y: auto;
-      animation: sheetUp 0.2s ease-out;
+      animation: sheetUp 0.18s ease-out;
     }
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .modal-header h2 { font-size: 1.15rem; font-weight: 800; }
-    .close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
 
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    /* Compact Screen Fit for Ledger Sheet */
+    .modal-content.ledger-fit {
+      display: flex;
+      flex-direction: column;
+      height: 96vh;
+      max-height: 96vh;
+      padding: 14px;
+      overflow: hidden;
+    }
+    .ledger-fit .scrollable-body {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .modal-header h2 { font-size: 1.05rem; font-weight: 800; }
+    .close-btn { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; color: var(--text-muted); }
+
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
     .form-control {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 9px 11px;
+      border-radius: 8px;
       border: 1px solid var(--border);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       outline: none;
       background: #f8fafc;
     }
     .form-control:focus { background: #ffffff; border-color: var(--primary); }
 
+    /* Compact Integrated Calculator */
     .calc-container {
       background: #f8fafc;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 14px;
+      border-radius: 10px;
+      padding: 8px;
+      margin-bottom: 10px;
     }
     .calc-screen {
       width: 100%;
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: 800;
       text-align: right;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: white;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
     }
     .preset-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-bottom: 8px;
+      gap: 5px;
+      margin-bottom: 6px;
     }
     .preset-chip {
       background: white;
       border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 8px 4px;
-      font-size: 0.8rem;
+      border-radius: 6px;
+      padding: 5px 3px;
+      font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
     }
     .calc-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      gap: 5px;
     }
     .calc-key {
-      padding: 12px;
+      padding: 9px;
       background: white;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1.05rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -237,80 +240,58 @@
 
     .message-options {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       background: #f8fafc;
       border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin: 8px 0 10px;
+    }
+    .chk-label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .chk-label input { width: 16px; height: 16px; accent-color: var(--primary); }
+
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 6px; }
+    .btn-action {
       padding: 12px;
       border-radius: 10px;
-      margin: 12px 0 16px;
-    }
-    .chk-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .chk-label input { width: 17px; height: 17px; accent-color: var(--primary); }
-
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .btn-action {
-      padding: 14px;
-      border-radius: 12px;
       border: none;
       font-weight: 800;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       cursor: pointer;
     }
     .btn-debit { background: var(--danger); color: white; }
     .btn-credit { background: var(--success); color: white; }
-    .btn-full { width: 100%; background: var(--primary); color: white; padding: 14px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; }
-    .btn-secondary { width: 100%; background: #0284c7; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
-    .btn-outline { width: 100%; background: white; border: 1px solid var(--border); padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-bottom: 6px; }
+    .btn-full { width: 100%; background: var(--primary); color: white; padding: 12px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+    .btn-secondary { width: 100%; background: #0284c7; color: white; padding: 10px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; margin-bottom: 6px; }
+    .btn-outline { width: 100%; background: white; border: 1px solid var(--border); padding: 9px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; margin-bottom: 6px; }
 
-    .tx-scrollbox { max-height: 160px; overflow-y: auto; margin-bottom: 14px; }
+    .tx-scrollbox { max-height: 105px; overflow-y: auto; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
     .tx-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #f1f5f9;
-      font-size: 0.85rem;
+      padding: 6px 0;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.8rem;
     }
-    .tx-actions {
-      display: flex;
-      gap: 4px;
-      margin-left: 8px;
-    }
-    .tx-btn-icon {
-      background: #f1f5f9;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 6px;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
+    .tx-actions { display: flex; gap: 3px; margin-left: 6px; }
+    .tx-btn-icon { background: #f1f5f9; border: none; border-radius: 4px; padding: 3px 5px; font-size: 0.72rem; cursor: pointer; }
 
     .section-divider {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 800;
       color: var(--text-muted);
-      margin: 16px 0 8px;
+      margin: 14px 0 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
 
-    .cust-manage-actions {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
+    .cust-manage-actions { display: flex; gap: 5px; margin-bottom: 8px; }
     .btn-sm-action {
       flex: 1;
-      padding: 7px 4px;
-      border-radius: 8px;
-      font-size: 0.72rem;
+      padding: 6px 3px;
+      border-radius: 6px;
+      font-size: 0.7rem;
       font-weight: 700;
       border: 1px solid var(--border);
       background: #f8fafc;
@@ -321,21 +302,18 @@
     .btn-sm-warning { color: #92400e; background: var(--warning-bg); border-color: #fde68a; }
     .btn-sm-pdf { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
 
-    /* Hidden Container specifically formatted for PDF rendering */
-    #pdfRenderTemplate {
-      display: none;
-      background: white;
-      padding: 24px;
-      color: #0f172a;
-      font-family: var(--font);
+    /* Printable Clean Ledger View (Print/PDF) */
+    @media print {
+      body * { visibility: hidden; }
+      #printableStatementArea, #printableStatementArea * { visibility: visible; }
+      #printableStatementArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; }
     }
-    .pdf-header { border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 16px; }
-    .pdf-header h1 { font-size: 20px; color: #059669; font-weight: 800; }
-    .pdf-header p { font-size: 11px; color: #64748b; margin-top: 2px; }
-    .pdf-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 11px; }
-    .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-    .pdf-table th { background: #f1f5f9; font-weight: 700; }
-    .pdf-summary-box { margin-top: 16px; border: 1px solid #059669; background: #ecfdf5; padding: 12px; border-radius: 6px; text-align: right; }
+    #printableStatementArea { display: none; background: white; color: #0f172a; padding: 18px; }
+    .print-header { border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px; }
+    .print-header h1 { font-size: 18px; color: #059669; }
+    .print-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+    .print-table th, .print-table td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
+    .print-table th { background: #f8fafc; }
   </style>
 </head>
 <body>
@@ -445,91 +423,95 @@
   <div class="modal" id="pdfFilterModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Export Ledger PDF</h2>
+        <h2>Export Ledger Statement</h2>
         <button class="close-btn" onclick="closeModal('pdfFilterModal')">&times;</button>
       </div>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Tarikh filter chunein (Khali chhodne par poora hisaab-kitab aayega):</p>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">Date range filter karein (Khali chhodne par poora hisaab aayega):</p>
       <div class="form-group">
-        <label>From Date (Is Din Se)</label>
+        <label>From Date</label>
         <input type="date" id="pdfDateFrom" class="form-control">
       </div>
       <div class="form-group">
-        <label>To Date (Is Din Tak)</label>
+        <label>To Date</label>
         <input type="date" id="pdfDateTo" class="form-control">
       </div>
-      <button class="btn-full" style="background:#0284c7; margin-bottom:8px;" onclick="generateCustomerPdf()">📄 Download PDF & Share on WhatsApp</button>
+      <button class="btn-full" style="background:#0284c7; margin-bottom:6px;" onclick="executePdfStatementPrint()">📄 Download / Print PDF Statement</button>
       <button class="btn-outline" onclick="closeModal('pdfFilterModal')">Radd Karein</button>
     </div>
   </div>
 
-  <!-- Modal: Ledger Entry -->
+  <!-- Modal: Customer Ledger View (Full-Screen Fit) -->
   <div class="modal" id="ledgerModal">
-    <div class="modal-content">
+    <div class="modal-content ledger-fit">
       <div class="modal-header">
         <div>
           <h2 id="ledgerCustName">Customer</h2>
-          <p id="ledgerCustPhone" style="font-size:0.8rem; color:var(--text-muted);"></p>
+          <p id="ledgerCustPhone" style="font-size:0.75rem; color:var(--text-muted);"></p>
         </div>
         <button class="close-btn" onclick="closeModal('ledgerModal')">&times;</button>
       </div>
 
-      <!-- Quick Action Controls -->
+      <!-- Action Chips -->
       <div class="cust-manage-actions">
-        <button class="btn-sm-action btn-sm-pdf" onclick="openPdfFilterModal()">📄 PDF</button>
+        <button class="btn-sm-action btn-sm-pdf" onclick="openPdfFilterModal()">📄 PDF Export</button>
         <button class="btn-sm-action btn-sm-warning" onclick="sendRollingPaymentReminder()">🔔 Remind</button>
         <button class="btn-sm-action" onclick="promptProtectedCustAction('edit')">✏️ Edit</button>
         <button class="btn-sm-action btn-sm-danger" onclick="promptProtectedCustAction('delete')">🗑️ Delete</button>
       </div>
 
-      <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:12px; margin-bottom:12px; text-align:center;">
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">NET BALANCE</span>
-        <h3 id="ledgerNetBalance" style="font-size:1.4rem; font-weight:800; margin:3px 0;">₹0</h3>
+      <!-- Balance Card -->
+      <div style="background:#f8fafc; border:1px solid var(--border); padding:8px 10px; border-radius:10px; margin-bottom:8px; text-align:center;">
+        <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">NET BALANCE</span>
+        <h3 id="ledgerNetBalance" style="font-size:1.25rem; font-weight:800; margin:1px 0;">₹0</h3>
         <span id="ledgerBehaviorBadge" class="badge"></span>
       </div>
 
-      <div class="tx-scrollbox" id="ledgerTxList"></div>
+      <!-- Internal Scrollable Area for Calculator and History -->
+      <div class="scrollable-body">
+        <div class="tx-scrollbox" id="ledgerTxList"></div>
 
-      <div class="calc-container">
-        <input type="text" id="calcScreen" class="calc-screen" value="0" readonly>
-        <div class="preset-row" id="presetButtonsContainer"></div>
-        <div class="calc-grid">
-          <button class="calc-key" onclick="calcPress('7')">7</button>
-          <button class="calc-key" onclick="calcPress('8')">8</button>
-          <button class="calc-key" onclick="calcPress('9')">9</button>
-          <button class="calc-key op" onclick="calcPress('/')">÷</button>
-          <button class="calc-key" onclick="calcPress('4')">4</button>
-          <button class="calc-key" onclick="calcPress('5')">5</button>
-          <button class="calc-key" onclick="calcPress('6')">6</button>
-          <button class="calc-key op" onclick="calcPress('*')">×</button>
-          <button class="calc-key" onclick="calcPress('1')">1</button>
-          <button class="calc-key" onclick="calcPress('2')">2</button>
-          <button class="calc-key" onclick="calcPress('3')">3</button>
-          <button class="calc-key op" onclick="calcPress('-')">-</button>
-          <button class="calc-key" onclick="calcClear()">C</button>
-          <button class="calc-key" onclick="calcPress('0')">0</button>
-          <button class="calc-key op" onclick="calcEval()">=</button>
-          <button class="calc-key op" onclick="calcPress('+')">+</button>
+        <div class="calc-container">
+          <input type="text" id="calcScreen" class="calc-screen" value="0" readonly>
+          <div class="preset-row" id="presetButtonsContainer"></div>
+          <div class="calc-grid">
+            <button class="calc-key" onclick="calcPress('7')">7</button>
+            <button class="calc-key" onclick="calcPress('8')">8</button>
+            <button class="calc-key" onclick="calcPress('9')">9</button>
+            <button class="calc-key op" onclick="calcPress('/')">÷</button>
+            <button class="calc-key" onclick="calcPress('4')">4</button>
+            <button class="calc-key" onclick="calcPress('5')">5</button>
+            <button class="calc-key" onclick="calcPress('6')">6</button>
+            <button class="calc-key op" onclick="calcPress('*')">×</button>
+            <button class="calc-key" onclick="calcPress('1')">1</button>
+            <button class="calc-key" onclick="calcPress('2')">2</button>
+            <button class="calc-key" onclick="calcPress('3')">3</button>
+            <button class="calc-key op" onclick="calcPress('-')">-</button>
+            <button class="calc-key" onclick="calcClear()">C</button>
+            <button class="calc-key" onclick="calcPress('0')">0</button>
+            <button class="calc-key op" onclick="calcEval()">=</button>
+            <button class="calc-key op" onclick="calcPress('+')">+</button>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="txDate" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>Item / Note</label>
-        <input type="text" id="txNote" class="form-control" placeholder="e.g. Royal Canin 4kg">
-      </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="txDate" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Item / Note</label>
+          <input type="text" id="txNote" class="form-control" placeholder="e.g. Royal Canin 4kg">
+        </div>
 
-      <div class="message-options">
-        <label class="chk-label">
-          <input type="checkbox" id="chkWhatsApp" onchange="persistMessagePreferences()">
-          <span>WhatsApp Vivran</span>
-        </label>
-        <label class="chk-label">
-          <input type="checkbox" id="chkTextSMS" onchange="persistMessagePreferences()">
-          <span>Text SMS Vivran</span>
-        </label>
+        <div class="message-options">
+          <label class="chk-label">
+            <input type="checkbox" id="chkWhatsApp" onchange="persistMessagePreferences()">
+            <span>WhatsApp</span>
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chkTextSMS" onchange="persistMessagePreferences()">
+            <span>Text SMS</span>
+          </label>
+        </div>
       </div>
 
       <div class="action-grid">
@@ -562,17 +544,17 @@
       </label>
 
       <div class="section-divider">CALCULATOR PRESETS (%)</div>
-      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:12px;">
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-bottom:10px;">
         <div>
-          <label style="font-size:0.75rem; color:var(--text-muted);">Preset 1</label>
+          <label style="font-size:0.72rem; color:var(--text-muted);">Preset 1</label>
           <input type="number" id="cfgPreset1" class="form-control" placeholder="-5">
         </div>
         <div>
-          <label style="font-size:0.75rem; color:var(--text-muted);">Preset 2</label>
+          <label style="font-size:0.72rem; color:var(--text-muted);">Preset 2</label>
           <input type="number" id="cfgPreset2" class="form-control" placeholder="8">
         </div>
         <div>
-          <label style="font-size:0.75rem; color:var(--text-muted);">Preset 3</label>
+          <label style="font-size:0.72rem; color:var(--text-muted);">Preset 3</label>
           <input type="number" id="cfgPreset3" class="form-control" placeholder="-10">
         </div>
       </div>
@@ -592,48 +574,48 @@
       </div>
       <div class="form-group">
         <label>Master Passphrase (Encryption Key)</label>
-        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Apna secret passphrase banayein">
+        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Secret encryption passphrase">
       </div>
 
       <button class="btn-full" onclick="saveSettings()">Save & Sync Database</button>
     </div>
   </div>
 
-  <!-- PDF Render HTML Container -->
-  <div id="pdfRenderTemplate">
-    <div class="pdf-header">
+  <!-- Printable Container for PDF Generation -->
+  <div id="printableStatementArea">
+    <div class="print-header">
       <h1>Pandey's Pet World Ledger Statement</h1>
-      <p>Official Customer Statement & Account Summary</p>
-      <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11px;">
+      <p style="font-size:11px; color:#64748b;">Complete Statement of Account & Transaction History</p>
+      <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:11px;">
         <div>
-          <strong>Customer:</strong> <span id="pdfCustName"></span><br>
-          <strong>Mobile:</strong> <span id="pdfCustPhone"></span>
+          <strong>Customer:</strong> <span id="printCustName"></span><br>
+          <strong>Mobile:</strong> <span id="printCustPhone"></span>
         </div>
         <div style="text-align:right;">
-          <strong>Date Generated:</strong> <span id="pdfGenDate"></span><br>
-          <strong>Period:</strong> <span id="pdfPeriod"></span>
+          <strong>Generated Date:</strong> <span id="printGenDate"></span><br>
+          <strong>Filter Period:</strong> <span id="printPeriod"></span>
         </div>
       </div>
     </div>
 
-    <table class="pdf-table">
+    <table class="print-table">
       <thead>
         <tr>
           <th>Date</th>
-          <th>Description / Note</th>
+          <th>Particulars / Note</th>
           <th style="text-align:right;">Debit (Udhar)</th>
           <th style="text-align:right;">Credit (Jama)</th>
         </tr>
       </thead>
-      <tbody id="pdfTableBody"></tbody>
+      <tbody id="printTableBody"></tbody>
     </table>
 
-    <div class="pdf-summary-box">
-      <div style="font-size:12px; margin-bottom:4px;"><strong>Total Debit:</strong> ₹<span id="pdfTotalDebit">0</span> | <strong>Total Credit:</strong> ₹<span id="pdfTotalCredit">0</span></div>
-      <div style="font-size:14px; font-weight:800; color:#059669;"><strong>Net Balance:</strong> ₹<span id="pdfFinalBalance">0</span> (<span id="pdfBalanceType">Chutta</span>)</div>
+    <div style="margin-top:14px; border:1px solid #059669; background:#ecfdf5; padding:10px; border-radius:6px; text-align:right;">
+      <div style="font-size:11px; margin-bottom:3px;"><strong>Total Debit:</strong> ₹<span id="printTotalDebit">0</span> | <strong>Total Credit:</strong> ₹<span id="printTotalCredit">0</span></div>
+      <div style="font-size:13px; font-weight:800; color:#059669;"><strong>Net Balance:</strong> ₹<span id="printFinalBalance">0</span> (<span id="printBalanceType">Chutta</span>)</div>
     </div>
 
-    <p style="text-align:center; font-size:10px; color:#64748b; margin-top:24px;">
+    <p style="text-align:center; font-size:10px; color:#64748b; margin-top:20px;">
       राधे-राधे! हमारे साथ आपके विश्वास और व्यापारिक सहयोग हेतु हार्दिक आभार।<br>
       <strong>Pandey's Pet World</strong>
     </p>
@@ -648,12 +630,10 @@
 
     const DB_FILE = "bahikhata_data.enc";
     
-    // Obfuscated PIN validation bina screen par PIN darshaye
     function checkSecretPin(val) {
       if (!val) return false;
       const arr = [50, 53, 56, 48];
-      const target = String.fromCharCode(...arr);
-      return String(val).trim() === target;
+      return String(val).trim() === String.fromCharCode(...arr);
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -708,15 +688,17 @@
     }
 
     /* ========================================================
-       PDF EXPORT & DIRECT WHATSAPP INTEGRATION
+       CLEAN PDF EXPORT (NO OVERLAP + 100% RELIABLE)
        ======================================================== */
     function openPdfFilterModal() {
+      // Background sheet close ho jayegi taaki overlap na ho
+      closeModal('ledgerModal');
       document.getElementById('pdfDateFrom').value = '';
       document.getElementById('pdfDateTo').value = '';
       openModal('pdfFilterModal');
     }
 
-    async function generateCustomerPdf() {
+    function executePdfStatementPrint() {
       const cust = appData.customers.find(c => c.id === currentCustomerId);
       if (!cust) return;
 
@@ -725,27 +707,22 @@
 
       let txs = (cust.transactions || []).slice().sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      if (fromDate) {
-        txs = txs.filter(t => t.date >= fromDate);
-      }
-      if (toDate) {
-        txs = txs.filter(t => t.date <= toDate);
-      }
+      if (fromDate) txs = txs.filter(t => t.date >= fromDate);
+      if (toDate) txs = txs.filter(t => t.date <= toDate);
 
       if (txs.length === 0) {
-        alert("Chuni gayi date range me koi transactions nahi hain.");
+        alert("Chuni gayi date range me koi entry nahi mili.");
         return;
       }
 
-      // Populate Template
-      document.getElementById('pdfCustName').innerText = cust.name;
-      document.getElementById('pdfCustPhone').innerText = cust.phone || 'N/A';
-      document.getElementById('pdfGenDate').innerText = new Date().toLocaleDateString('hi-IN');
-      document.getElementById('pdfPeriod').innerText = (fromDate || toDate) ? `${fromDate || 'Beginning'} se ${toDate || 'Today'}` : 'Complete History';
+      document.getElementById('printCustName').innerText = cust.name;
+      document.getElementById('printCustPhone').innerText = cust.phone || 'N/A';
+      document.getElementById('printGenDate').innerText = new Date().toLocaleDateString('hi-IN');
+      document.getElementById('printPeriod').innerText = (fromDate || toDate) ? `${fromDate || 'Beginning'} se ${toDate || 'Today'}` : 'Complete History';
 
       let totalDebit = 0;
       let totalCredit = 0;
-      const tbody = document.getElementById('pdfTableBody');
+      const tbody = document.getElementById('printTableBody');
       tbody.innerHTML = '';
 
       txs.forEach(t => {
@@ -764,34 +741,22 @@
       });
 
       const net = totalDebit - totalCredit;
-      document.getElementById('pdfTotalDebit').innerText = totalDebit;
-      document.getElementById('pdfTotalCredit').innerText = totalCredit;
-      document.getElementById('pdfFinalBalance').innerText = Math.abs(net);
-      document.getElementById('pdfBalanceType').innerText = net > 0 ? 'Due / Lena Hai' : net < 0 ? 'Advance Jama' : 'Nill (Chutta)';
-
-      const element = document.getElementById('pdfRenderTemplate');
-      element.style.display = 'block';
-
-      const opt = {
-        margin: 10,
-        filename: `${cust.name.replace(/\s+/g, '_')}_Ledger_Statement.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      try {
-        await html2pdf().set(opt).from(element).save();
-      } finally {
-        element.style.display = 'none';
-      }
+      document.getElementById('printTotalDebit').innerText = totalDebit;
+      document.getElementById('printTotalCredit').innerText = totalCredit;
+      document.getElementById('printFinalBalance').innerText = Math.abs(net);
+      document.getElementById('printBalanceType').innerText = net > 0 ? 'Due / Lena Hai' : net < 0 ? 'Advance Jama' : 'Nill (Chutta)';
 
       closeModal('pdfFilterModal');
 
-      // WhatsApp trigger with respectful note
+      // Native PDF engine trigger: opens clean Save as PDF layout
+      setTimeout(() => {
+        window.print();
+      }, 200);
+
+      // WhatsApp Message trigger
       if (cust.phone) {
         const balanceWord = net > 0 ? `₹${net} देय (Due)` : (net < 0 ? `₹${Math.abs(net)} एडवांस` : 'हिसाब चुकता');
-        const pdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) की ओर से आपका विस्तृत खाता विवरण (Ledger Statement PDF) तैयार कर दिया गया है।\n\nवर्तमान शुद्ध शेष: ${balanceWord}।\n\nकृपया डाउनलोड की गई PDF फाइल का अवलोकन कर लें। आपके निरंतर सहयोग और स्नेह हेतु हम सदैव आभारी हैं!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
+        const pdfMsg = `राधे-राधे ${cust.name} जी 🙏\n\nपांडेयस पेट वर्ल्ड (Pandey's Pet World) की ओर से आपका विस्तृत खाता विवरण (Ledger Statement PDF) तैयार कर दिया गया है।\n\nवर्तमान शुद्ध शेष: ${balanceWord}।\n\nकृपया स्टेटमेंट का अवलोकन कर लें। आपके निरंतर सहयोग और स्नेह हेतु हम सदैव आभारी हैं!\n\nसादर,\nपांडेयस पेट वर्ल्ड (Pandey's Pet World)`;
         const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
         const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
         window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(pdfMsg)}`, '_blank');
@@ -915,7 +880,7 @@
         return;
       }
 
-      if (confirm("Kya aap sach me is transaction entry ko delete karna chahte hain?")) {
+      if (confirm("Kya aap is transaction entry ko delete karna chahte hain?")) {
         const cust = appData.customers.find(c => c.id === currentCustomerId);
         if (!cust) return;
 
@@ -936,7 +901,7 @@
 
       const net = getCustomerNetBalance(cust);
       if (net <= 0) {
-        alert("Inka koi bhi baki (due) balance nahi hai.");
+        alert("Inka koi baki balance nahi hai.");
         return;
       }
 
@@ -1386,9 +1351,9 @@
         row.innerHTML = `
           <div style="flex:1;">
             <strong>${escapeHtml(tx.note || (tx.type === 'GIVEN' ? 'Udhar Diya' : 'Jama Hua'))}</strong>
-            <div style="font-size:0.75rem; color:var(--text-muted);">${tx.date}</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">${tx.date}</div>
           </div>
-          <div style="font-weight:700; margin-right:8px;" class="${tx.type === 'GIVEN' ? 'text-danger' : 'text-success'}">
+          <div style="font-weight:700; margin-right:6px;" class="${tx.type === 'GIVEN' ? 'text-danger' : 'text-success'}">
             ${tx.type === 'GIVEN' ? '-' : '+'} ₹${tx.amount}
           </div>
           <div class="tx-actions">
