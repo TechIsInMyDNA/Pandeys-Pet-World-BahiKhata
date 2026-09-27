@@ -23,9 +23,8 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 90px; user-select: none; }
+    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 95px; user-select: none; }
 
-    /* Clean Mobile Top Bar */
     .app-header {
       background: #ffffff;
       padding: 14px 18px;
@@ -37,7 +36,7 @@
       z-index: 40;
       border-bottom: 1px solid var(--border);
     }
-    .brand-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); letter-spacing: -0.3px; }
+    .brand-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
     .sync-status { font-size: 0.72rem; display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #eab308; }
     .dot.synced { background: var(--success); }
@@ -55,7 +54,6 @@
       cursor: pointer;
     }
 
-    /* Overall Summary Stats */
     .summary-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -68,12 +66,11 @@
       border-radius: var(--radius);
       border: 1px solid var(--border);
     }
-    .stat-card h3 { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card h3 { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
     .stat-card p { font-size: 1.35rem; font-weight: 800; margin-top: 4px; }
     .text-danger { color: var(--danger); }
     .text-success { color: var(--success); }
 
-    /* Search & Filter */
     .search-box { padding: 0 16px 12px; }
     .search-input {
       width: 100%;
@@ -83,11 +80,9 @@
       outline: none;
       font-size: 0.92rem;
       background: white;
-      transition: border-color 0.2s;
     }
     .search-input:focus { border-color: var(--primary); }
 
-    /* Customer List */
     .customer-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
     .customer-card {
       background: var(--card-bg);
@@ -121,7 +116,6 @@
       padding: 3px 8px;
       border-radius: 6px;
       margin-top: 6px;
-      letter-spacing: 0.3px;
     }
     .badge-vyavaharik { background: var(--success-bg); color: #047857; }
     .badge-defaulter { background: var(--danger-bg); color: #b91c1c; }
@@ -129,7 +123,6 @@
     .cust-balance span { font-size: 1.15rem; font-weight: 800; display: block; }
     .cust-balance small { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
 
-    /* Bottom Action Button (FAB) */
     .fab-container {
       position: fixed;
       bottom: 20px;
@@ -150,7 +143,6 @@
       cursor: pointer;
     }
 
-    /* Modal / Bottom Sheet */
     .modal {
       display: none;
       position: fixed;
@@ -170,7 +162,7 @@
       padding: 22px 20px;
       max-height: 92vh;
       overflow-y: auto;
-      animation: sheetUp 0.22s ease-out;
+      animation: sheetUp 0.2s ease-out;
     }
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -190,7 +182,6 @@
     }
     .form-control:focus { background: #ffffff; border-color: var(--primary); }
 
-    /* Calculator & Dynamic Presets */
     .calc-container {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -222,7 +213,6 @@
       padding: 8px 4px;
       font-size: 0.8rem;
       font-weight: 700;
-      color: var(--text-main);
       cursor: pointer;
     }
     .calc-grid {
@@ -241,7 +231,6 @@
     }
     .calc-key.op { background: #f1f5f9; color: var(--primary); }
 
-    /* Message Selection Checkboxes */
     .message-options {
       display: flex;
       gap: 16px;
@@ -261,7 +250,6 @@
     }
     .chk-label input { width: 17px; height: 17px; accent-color: var(--primary); }
 
-    /* Dual Action Buttons */
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn-action {
       padding: 14px;
@@ -274,8 +262,9 @@
     .btn-debit { background: var(--danger); color: white; }
     .btn-credit { background: var(--success); color: white; }
     .btn-full { width: 100%; background: var(--primary); color: white; padding: 14px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-secondary { width: 100%; background: #0284c7; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+    .btn-outline { width: 100%; background: white; border: 1px solid var(--border); padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-bottom: 6px; }
 
-    /* Ledger Tx History List */
     .tx-scrollbox { max-height: 140px; overflow-y: auto; margin-bottom: 14px; }
     .tx-row {
       display: flex;
@@ -284,11 +273,18 @@
       border-bottom: 1px solid #f1f5f9;
       font-size: 0.85rem;
     }
+    .section-divider {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin: 16px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- App Header -->
   <header class="app-header">
     <div>
       <div class="brand-title">Pandeys Pet World</div>
@@ -300,7 +296,6 @@
     <button class="settings-btn" onclick="openConfigModal()">⚙️</button>
   </header>
 
-  <!-- Summary Stats -->
   <section class="summary-container">
     <div class="stat-card">
       <h3>Kul Lena Hai</h3>
@@ -312,15 +307,12 @@
     </div>
   </section>
 
-  <!-- Search Filter -->
   <div class="search-box">
     <input type="text" id="searchInput" class="search-input" placeholder="Search customer or mobile..." oninput="renderCustomerList()">
   </div>
 
-  <!-- Customer Ledger Cards -->
   <main class="customer-list" id="customerList"></main>
 
-  <!-- Bottom CTA -->
   <div class="fab-container">
     <button class="fab" onclick="openAddCustomerModal()">+ Add Customer</button>
   </div>
@@ -355,7 +347,6 @@
         <button class="close-btn" onclick="closeModal('ledgerModal')">&times;</button>
       </div>
 
-      <!-- Current Balance Banner -->
       <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:12px; margin-bottom:12px; text-align:center;">
         <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">NET BALANCE</span>
         <h3 id="ledgerNetBalance" style="font-size:1.4rem; font-weight:800; margin:3px 0;">₹0</h3>
@@ -364,13 +355,9 @@
 
       <div class="tx-scrollbox" id="ledgerTxList"></div>
 
-      <!-- Inbuilt Calculator -->
       <div class="calc-container">
         <input type="text" id="calcScreen" class="calc-screen" value="0" readonly>
-        
-        <!-- Editable Presets rendered dynamically -->
         <div class="preset-row" id="presetButtonsContainer"></div>
-
         <div class="calc-grid">
           <button class="calc-key" onclick="calcPress('7')">7</button>
           <button class="calc-key" onclick="calcPress('8')">8</button>
@@ -400,7 +387,6 @@
         <input type="text" id="txNote" class="form-control" placeholder="e.g. Royal Canin 4kg">
       </div>
 
-      <!-- Separate WhatsApp & SMS Checkboxes -->
       <div class="message-options">
         <label class="chk-label">
           <input type="checkbox" id="chkWhatsApp" onchange="persistMessagePreferences()">
@@ -419,16 +405,30 @@
     </div>
   </div>
 
-  <!-- Modal: Settings & Presets Configuration -->
+  <!-- Modal: Settings, Backups, Exports & OkCredit Import -->
   <div class="modal" id="configModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>App & Sync Settings</h2>
+        <h2>App, Backup & Cloud</h2>
         <button class="close-btn" onclick="closeModal('configModal')">&times;</button>
       </div>
 
-      <h4 style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">CALCULATOR PRESETS (%)</h4>
-      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:16px;">
+      <div class="section-divider">DATA BACKUP & EXCEL EXPORT</div>
+      <button class="btn-secondary" onclick="exportToExcel()">📊 Export to Excel (.csv)</button>
+      <button class="btn-outline" onclick="downloadJsonBackup()">💾 Download Backup (JSON)</button>
+      <label class="btn-outline" style="display:block; text-align:center; cursor:pointer;">
+        📥 Restore Backup (JSON)
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="restoreJsonBackup(event)">
+      </label>
+
+      <div class="section-divider">IMPORT FROM OKCREDIT</div>
+      <label class="btn-outline" style="display:block; text-align:center; background:#e0f2fe; color:#0369a1; border-color:#bae6fd; cursor:pointer;">
+        🔄 Import OkCredit File (.csv / .json)
+        <input type="file" id="okcreditFileInput" accept=".csv,.json" style="display:none;" onchange="importFromOkCredit(event)">
+      </label>
+
+      <div class="section-divider">CALCULATOR PRESETS (%)</div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:12px;">
         <div>
           <label style="font-size:0.75rem; color:var(--text-muted);">Preset 1</label>
           <input type="number" id="cfgPreset1" class="form-control" placeholder="-5">
@@ -443,30 +443,29 @@
         </div>
       </div>
 
-      <h4 style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">GITHUB CLOUD SYNC & ENCRYPTION</h4>
+      <div class="section-divider">GITHUB CLOUD SYNC (256-BIT ENCRYPTION)</div>
       <div class="form-group">
-        <label>GitHub Personal Access Token</label>
+        <label>GitHub Personal Access Token (No Expiration)</label>
         <input type="password" id="cfgToken" class="form-control" placeholder="ghp_xxxxxxxxxxxx">
       </div>
       <div class="form-group">
         <label>GitHub Username</label>
-        <input type="text" id="cfgUsername" class="form-control" placeholder="Username">
+        <input type="text" id="cfgUsername" class="form-control" placeholder="TechIsInMyDNA">
       </div>
       <div class="form-group">
         <label>Repository Name</label>
-        <input type="text" id="cfgRepo" class="form-control" placeholder="Repo Name">
+        <input type="text" id="cfgRepo" class="form-control" placeholder="Pandeys-Pet-World-BahiKhata">
       </div>
       <div class="form-group">
-        <label>Master Passphrase (AES-GCM 256)</label>
-        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Encryption Key">
+        <label>Master Passphrase (Encryption Key)</label>
+        <input type="password" id="cfgPassphrase" class="form-control" placeholder="Apna secret passphrase banayein">
       </div>
 
-      <button class="btn-full" onclick="saveSettings()">Save & Apply</button>
+      <button class="btn-full" onclick="saveSettings()">Save & Sync Database</button>
     </div>
   </div>
 
   <script>
-    // State management
     let appData = { customers: [], lastUpdated: 0 };
     let currentCustomerId = null;
     let syncSha = null;
@@ -478,10 +477,8 @@
     window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('txDate').valueAsDate = new Date();
 
-      // Load presets & message preferences
       loadPresetButtons();
       loadMessagePreferences();
-
       loadLocalData();
       renderCustomerList();
 
@@ -503,9 +500,6 @@
              localStorage.getItem('sec_pass');
     }
 
-    /* ==========================================
-       MESSAGE PREFERENCES & PRESET BUTTONS
-       ========================================== */
     function loadPresetButtons() {
       const p1 = parseFloat(localStorage.getItem('cfg_p1') || "-5");
       const p2 = parseFloat(localStorage.getItem('cfg_p2') || "8");
@@ -532,7 +526,7 @@
     }
 
     /* ==========================================
-       CRYPTO ENGINE: PBKDF2 + AES-GCM (256-bit)
+       CRYPTO ENGINE: PBKDF2 + AES-GCM
        ========================================== */
     async function deriveKey(passphrase, salt) {
       const enc = new TextEncoder();
@@ -634,10 +628,10 @@
           } else {
             await pushToGitHub(url, token, pass);
           }
-          updateSyncStatus('synced', 'Live Cloud Sync');
+          updateSyncStatus('synced', 'Live Cloud Synced');
         } else if (getRes.status === 404) {
           await pushToGitHub(url, token, pass);
-          updateSyncStatus('synced', 'Cloud Synced');
+          updateSyncStatus('synced', 'First Sync Done');
         } else {
           throw new Error('Auth or repo mismatch');
         }
@@ -667,8 +661,179 @@
       if (putRes.ok) {
         const resData = await putRes.json();
         syncSha = resData.content.sha;
-        updateSyncStatus('synced', 'Live Cloud Sync');
+        updateSyncStatus('synced', 'Live Cloud Synced');
       }
+    }
+
+    /* ==========================================
+       BACKUP, RESTORE, EXCEL & OKCREDIT IMPORT
+       ========================================== */
+    function downloadJsonBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `Pandeys_Pet_World_Backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function restoreJsonBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && Array.isArray(parsed.customers)) {
+            appData = parsed;
+            saveLocalData();
+            renderCustomerList();
+            await syncData();
+            alert('Backup successfully restore ho gaya!');
+            closeModal('configModal');
+          } else {
+            alert('Invalid backup file structure.');
+          }
+        } catch (err) {
+          alert('JSON file read karne me error aayi.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportToExcel() {
+      if (!appData.customers || appData.customers.length === 0) {
+        alert('Export karne ke liye koi data nahi hai.');
+        return;
+      }
+
+      let csv = "\uFEFF"; // UTF-8 BOM for Excel Hindi support
+      csv += "Customer Name,Mobile,Status,Net Balance,Date,Transaction Type,Amount (INR),Note\n";
+
+      appData.customers.forEach(c => {
+        const net = getCustomerNetBalance(c);
+        const status = evaluateCustomerStatus(c).label;
+        const txs = c.transactions || [];
+
+        if (txs.length === 0) {
+          csv += `"${c.name}","${c.phone || ''}","${status}","${net}","","","",""\n`;
+        } else {
+          txs.forEach(tx => {
+            const cleanNote = (tx.note || '').replace(/"/g, '""');
+            csv += `"${c.name}","${c.phone || ''}","${status}","${net}","${tx.date}","${tx.type === 'GIVEN' ? 'Udhar Diya' : 'Jama Hua'}","${tx.amount}","${cleanNote}"\n`;
+          });
+        }
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Pandeys_Pet_World_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function importFromOkCredit(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const text = e.target.result;
+        try {
+          if (file.name.endsWith('.json')) {
+            const json = JSON.parse(text);
+            parseOkCreditJson(json);
+          } else {
+            parseOkCreditCsv(text);
+          }
+          saveLocalData();
+          renderCustomerList();
+          await syncData();
+          alert('OkCredit data successfully import & sync ho gaya!');
+          closeModal('configModal');
+        } catch (err) {
+          console.error(err);
+          alert('OkCredit file parse karne me samasya aayi. Format check karein.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function parseOkCreditCsv(csvText) {
+      const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
+      if (lines.length < 2) return;
+
+      const headers = lines[0].toLowerCase().split(',').map(h => h.replace(/["\s]/g, ''));
+      const nameIdx = headers.findIndex(h => h.includes('name') || h.includes('customer'));
+      const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile'));
+      const amountIdx = headers.findIndex(h => h.includes('amount') || h.includes('balance') || h.includes('due'));
+      const typeIdx = headers.findIndex(h => h.includes('type') || h.includes('payment') || h.includes('credit'));
+      const dateIdx = headers.findIndex(h => h.includes('date'));
+
+      for (let i = 1; i < lines.length; i++) {
+        const row = lines[i].split(',').map(item => item.replace(/"/g, '').trim());
+        const custName = row[nameIdx] || 'Imported Customer';
+        const custPhone = phoneIdx !== -1 ? row[phoneIdx] : '';
+        const amt = parseFloat(row[amountIdx] || 0);
+        const rawType = (typeIdx !== -1 ? row[typeIdx] : '').toLowerCase();
+        const date = (dateIdx !== -1 && row[dateIdx]) ? row[dateIdx] : new Date().toISOString().split('T')[0];
+
+        let targetCust = appData.customers.find(c => c.name.toLowerCase() === custName.toLowerCase() || (custPhone && c.phone === custPhone));
+        if (!targetCust) {
+          targetCust = {
+            id: 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            name: custName,
+            phone: custPhone,
+            transactions: []
+          };
+          appData.customers.push(targetCust);
+        }
+
+        if (amt > 0) {
+          const isGiven = rawType.includes('given') || rawType.includes('debit') || rawType.includes('udhar') || rawType.includes('due');
+          targetCust.transactions.push({
+            id: 'tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            type: isGiven ? 'GIVEN' : 'GOT',
+            amount: amt,
+            note: 'OkCredit Migration',
+            date: date
+          });
+        }
+      }
+    }
+
+    function parseOkCreditJson(data) {
+      const records = Array.isArray(data) ? data : (data.customers || data.data || []);
+      records.forEach(r => {
+        const name = r.name || r.customer_name || 'Imported Customer';
+        const phone = r.phone || r.mobile || '';
+        let targetCust = appData.customers.find(c => c.name.toLowerCase() === name.toLowerCase() || (phone && c.phone === phone));
+        if (!targetCust) {
+          targetCust = {
+            id: 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            name: name,
+            phone: phone,
+            transactions: []
+          };
+          appData.customers.push(targetCust);
+        }
+
+        const txs = r.transactions || [];
+        txs.forEach(t => {
+          targetCust.transactions.push({
+            id: 'tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            type: (t.type === 'GIVEN' || t.type === 'debit') ? 'GIVEN' : 'GOT',
+            amount: parseFloat(t.amount || 0),
+            note: t.note || 'OkCredit Migration',
+            date: t.date || new Date().toISOString().split('T')[0]
+          });
+        });
+      });
     }
 
     /* ==========================================
@@ -814,7 +979,6 @@
 
       const updatedNet = getCustomerNetBalance(cust);
 
-      // Trigger Notifications based on checkboxes
       if (cust.phone) {
         const messageText = composeMessage(cust.name, type, amount, updatedNet, note);
         const cleanPhone = cust.phone.replace(/[^0-9]/g, '');
@@ -824,7 +988,6 @@
           window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(messageText)}`, '_blank');
         }
         if (sendSMS) {
-          // Open default native SMS intent
           window.open(`sms:${cleanPhone}?body=${encodeURIComponent(messageText)}`, '_blank');
         }
       }
@@ -916,8 +1079,8 @@
 
     function openConfigModal() {
       document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
-      document.getElementById('cfgUsername').value = localStorage.getItem('gh_user') || '';
-      document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
+      document.getElementById('cfgUsername').value = localStorage.getItem('gh_user') || 'TechIsInMyDNA';
+      document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || 'Pandeys-Pet-World-BahiKhata';
       document.getElementById('cfgPassphrase').value = localStorage.getItem('sec_pass') || '';
 
       document.getElementById('cfgPreset1').value = localStorage.getItem('cfg_p1') || "-5";
