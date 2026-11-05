@@ -573,6 +573,10 @@
         <input type="text" id="cfgRepo" class="form-control" placeholder="Pandeys-Pet-World-BahiKhata">
       </div>
       <div class="form-group">
+        <label>Sync Branch (No Re-Deploy)</label>
+        <input type="text" id="cfgBranch" class="form-control" placeholder="data-store">
+      </div>
+      <div class="form-group">
         <label>Master Passphrase (Encryption Key)</label>
         <input type="password" id="cfgPassphrase" class="form-control" placeholder="Secret encryption passphrase">
       </div>
@@ -774,9 +778,9 @@
             title: `Statement - ${cust.name}`,
             text: reminderWithPdfMsg
           });
-          return; // Successfully opened system share sheet
+          return;
         } catch (shareErr) {
-          if (shareErr.name === 'AbortError') return; // User cancelled
+          if (shareErr.name === 'AbortError') return;
         }
       }
 
@@ -1029,9 +1033,46 @@
       return new TextDecoder().decode(decrypted);
     }
 
-    /* ==========================================
-       GITHUB 2-WAY SYNC
-       ========================================== */
+    /* ========================================================
+       GITHUB 2-WAY SYNC (AUTOMATIC DATA BRANCH - NO RE-DEPLOY)
+       ======================================================== */
+    function getSyncBranch() {
+      return localStorage.getItem('gh_branch') || 'data-store';
+    }
+
+    async function ensureDataBranch(token, user, repo, branch) {
+      const branchUrl = `https://api.github.com/repos/${user}/${repo}/git/ref/heads/${branch}`;
+      const res = await fetch(branchUrl, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+
+      if (res.status === 200) return true; // Branch already exists
+
+      if (res.status === 404) {
+        // Fetch default branch HEAD sha (e.g. main)
+        const repoInfoRes = await fetch(`https://api.github.com/repos/${user}/${repo}`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        const repoInfo = await repoInfoRes.json();
+        const defaultBranch = repoInfo.default_branch || 'main';
+
+        const defaultRefRes = await fetch(`https://api.github.com/repos/${user}/${repo}/git/ref/heads/${defaultBranch}`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        const defaultRefData = await defaultRefRes.json();
+        const headSha = defaultRefData.object.sha;
+
+        // Create new branch from HEAD sha
+        const createRefRes = await fetch(`https://api.github.com/repos/${user}/${repo}/git/refs`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: headSha })
+        });
+        return createRefRes.ok;
+      }
+      return false;
+    }
+
     function loadLocalData() {
       const local = localStorage.getItem('local_bahikhata_cache');
       if (local) {
@@ -1059,10 +1100,13 @@
       const token = localStorage.getItem('gh_token');
       const user = localStorage.getItem('gh_user');
       const repo = localStorage.getItem('gh_repo');
+      const branch = getSyncBranch();
       const pass = localStorage.getItem('sec_pass');
-      const url = `https://api.github.com/repos/${user}/${repo}/contents/${DB_FILE}`;
 
       try {
+        await ensureDataBranch(token, user, repo, branch);
+
+        const url = `https://api.github.com/repos/${user}/${repo}/contents/${DB_FILE}?ref=${branch}`;
         const getRes = await fetch(url, {
           headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
         });
@@ -1079,12 +1123,12 @@
             saveLocalData();
             renderCustomerList();
           } else {
-            await pushToGitHub(url, token, pass);
+            await pushToGitHub(token, user, repo, branch, pass);
           }
-          updateSyncStatus('synced', 'Live Cloud Synced');
+          updateSyncStatus('synced', `Synced (${branch})`);
         } else if (getRes.status === 404) {
-          await pushToGitHub(url, token, pass);
-          updateSyncStatus('synced', 'First Sync Done');
+          await pushToGitHub(token, user, repo, branch, pass);
+          updateSyncStatus('synced', `First Sync (${branch})`);
         } else {
           throw new Error('Auth or repo mismatch');
         }
@@ -1096,12 +1140,14 @@
       }
     }
 
-    async function pushToGitHub(url, token, pass) {
+    async function pushToGitHub(token, user, repo, branch, pass) {
       saveLocalData();
       const encryptedBase64 = await encryptPayload(JSON.stringify(appData), pass);
+      const url = `https://api.github.com/repos/${user}/${repo}/contents/${DB_FILE}`;
       const payload = {
         message: `Sync Pandeys Pet World: ${new Date().toISOString()}`,
         content: btoa(unescape(encodeURIComponent(encryptedBase64))),
+        branch: branch,
         sha: syncSha || undefined
       };
 
@@ -1114,7 +1160,7 @@
       if (putRes.ok) {
         const resData = await putRes.json();
         syncSha = resData.content.sha;
-        updateSyncStatus('synced', 'Live Cloud Synced');
+        updateSyncStatus('synced', `Synced (${branch})`);
       }
     }
 
@@ -1544,6 +1590,7 @@
       document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
       document.getElementById('cfgUsername').value = localStorage.getItem('gh_user') || 'TechIsInMyDNA';
       document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || 'Pandeys-Pet-World-BahiKhata';
+      document.getElementById('cfgBranch').value = localStorage.getItem('gh_branch') || 'data-store';
       document.getElementById('cfgPassphrase').value = localStorage.getItem('sec_pass') || '';
 
       document.getElementById('cfgPreset1').value = localStorage.getItem('cfg_p1') || "-5";
@@ -1557,6 +1604,7 @@
       const token = document.getElementById('cfgToken').value.trim();
       const user = document.getElementById('cfgUsername').value.trim();
       const repo = document.getElementById('cfgRepo').value.trim();
+      const branch = document.getElementById('cfgBranch').value.trim() || 'data-store';
       const pass = document.getElementById('cfgPassphrase').value.trim();
 
       const p1 = document.getElementById('cfgPreset1').value.trim() || "-5";
@@ -1572,6 +1620,7 @@
         localStorage.setItem('gh_token', token);
         localStorage.setItem('gh_user', user);
         localStorage.setItem('gh_repo', repo);
+        localStorage.setItem('gh_branch', branch);
         localStorage.setItem('sec_pass', pass);
       }
 
